@@ -1,0 +1,60 @@
+.widget-calendar {
+
+}
+
+.widget-calendar .widget-body {
+  display: flex;
+}
+
+.widget-calendar .calendar-calendar {
+  flex-grow: 1;
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-rows: 2em repeat(5, minmax(0, 1fr));
+  font-size: 10px;
+}
+
+.widget-calendar .calendar-header {
+  font-weight: bold;
+  text-align: center;
+}
+
+.widget-calendar .calendar-item {
+  background: #fafafa;
+  padding: 5px;
+}
+
+.widget-calendar .calendar-item.calendar-item-empty {
+  background: none;
+}
+
+.widget-calendar .calendar-item-date {
+  text-align: right;
+}
+
+.widget-calendar .calendar-item-events {
+  margin: 0;
+  padding: 0;
+}
+
+.widget-calendar .calendar-item-events li {
+  margin: 0 0 0 1em;
+  padding: 0;
+}
+
+.widget-calendar .calendar-item-event-0 {
+  color: blue;
+}
+
+.widget-calendar .calendar-item-event-1 {
+  color: green;
+}
+
+.widget-calendar .calendar-item-event-2 {
+  color: yellow;
+}
+
+.widget-calendar .calendar-item-event-3 {
+  color: red;
+}

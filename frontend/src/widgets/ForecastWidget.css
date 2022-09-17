@@ -1,0 +1,97 @@
+.widget-forecast .widget-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.widget-forecast .forecast-item {
+  flex: 1;
+  padding: 0 1em 0 0;
+  margin: 0 1em 0 0;
+  border-right: solid 1px #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.widget-forecast .forecast-item:last-child {
+  margin-right: 0;
+  border: none;
+}
+
+.widget-forecast .forecast-title {
+  text-transform: uppercase;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+
+.widget-forecast .forecast-details {
+  display: flex;
+  flex-direction: row;
+}
+
+.widget-forecast .forecast-icon {
+  width: 50%;
+}
+
+.widget-forecast .forecast-stats {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.widget-forecast .forecast-temp {
+  font-size: 3em;
+  line-height: 1em;
+  
+}
+
+.widget-forecast .forecast-wind {
+  
+}
+
+.widget-forecast .forecast-wind::before {
+  content: '';
+  position: relative;
+  /* font-size: 1.5em; */
+  margin-right: 0.25em;
+}
+
+.widget-forecast .forecast-wind-n::before {
+  content: '↑';
+}
+
+.widget-forecast .forecast-wind-ne::before {
+  content: '↗';
+}
+
+.widget-forecast .forecast-wind-e::before {
+  content: '→';
+}
+
+.widget-forecast .forecast-wind-se::before {
+  content: '↘';
+}
+
+.widget-forecast .forecast-wind-s::before {
+  content: '↓';
+}
+
+.widget-forecast .forecast-wind-sw::before {
+  content: '↙';
+}
+
+.widget-forecast .forecast-wind-w::before {
+  content: '←';
+}
+
+.widget-forecast .forecast-wind-nw::before {
+  content: '↖';
+}
+
+.widget-forecast .forecast-description {
+  margin: 0.5em 0 0 0;
+  font-size: 0.8em;
+}
