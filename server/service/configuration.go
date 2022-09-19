@@ -3,9 +3,10 @@ package service
 import "main/core"
 
 type Configuration struct {
-	ICal           ICalConfiguration           `json:"ical"`
-	NOAA           NOAAConfiguration           `json:"noaa"`
-	WeatherStation WeatherStationConfiguration `json:"weatherStation"`
+	ICal           iCalConfiguration           `json:"ical"`
+	NOAA           noaaConfiguration           `json:"noaa"`
+	WeatherStation weatherStationConfiguration `json:"weatherStation"`
+	Traffic        trafficConfiguration        `json:"traffic"`
 }
 
 func (c Configuration) Configurations() []core.ServiceConfig {
@@ -13,5 +14,6 @@ func (c Configuration) Configurations() []core.ServiceConfig {
 		c.ICal,
 		c.NOAA,
 		c.WeatherStation,
+		c.Traffic,
 	}
 }

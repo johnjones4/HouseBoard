@@ -1,4 +1,4 @@
-import { ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAResponse, WeatherStationResponse } from "./responses"
+import { ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAResponse, TrafficDestinationResponse, TrafficResponse, WeatherStationResponse } from "./responses"
 
 export class ICalEvent {
   title: string
@@ -90,14 +90,36 @@ export class WeatherStation {
   }
 }
 
+export class TrafficDestination {
+  destination: string
+  expectedDuration: number
+  estimatedDuration: number
+
+  constructor(r: TrafficDestinationResponse) {
+    this.destination = r.destination
+    this.expectedDuration = r.expectedDuration
+    this.estimatedDuration = r.estimatedDuration
+  }
+}
+
+export class Traffic {
+  destinations: TrafficDestination[]
+
+  constructor(r: TrafficResponse) {
+    this.destinations = r.destinations.map(d => new TrafficDestination(d))
+  }
+}
+
 export class Info {
   ical: ICal
   noaa: NOAA
   weatherstation: WeatherStation
+  traffic: Traffic
   
   constructor(r: InfoResponse) {
     this.ical = new ICal(r.ical)
     this.noaa = new NOAA(r.noaa)
     this.weatherstation = new WeatherStation(r.weatherstation)
+    this.traffic = new Traffic(r.traffic)
   }
 }

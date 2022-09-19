@@ -39,25 +39,6 @@ const CalendarWidget = (props: CalendarWidgetProps) => {
           )
         })}
       </div>
-      {/* <table>
-        <thead>
-          <tr>{daysOfWeek.map(d => (<th key={d}>{d}</th>))}</tr>
-        </thead>
-        <tbody>
-          { calendar.map((r, i) => (
-            <tr key={i}>{r.map((c, j) => {
-              if (!c.date) {
-                return (<td key={j}/>)
-              }
-              return (
-                <td key={j}>
-                  {c.date.getDate()}
-                </td>
-              )
-            })}</tr>
-          )) }
-        </tbody>
-      </table> */}
     </Widget>
   )
 }
@@ -80,7 +61,7 @@ const makeCalendarArray = (events: ICalEvent[]): CalendarItem[] => {
         })
       }
     }
-    for (let col = curDay.getDay(); col < 7; col++) {
+    for (let col = curDay.getDay(); col < 7; col++) {      
       const date = curDay
       array.push({
         events: events.filter(event => eventOccursOnDay(event, date)),

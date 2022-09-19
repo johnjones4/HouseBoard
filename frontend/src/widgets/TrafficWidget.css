@@ -1,0 +1,19 @@
+.widget-traffic .traffic-time {
+  text-align: right;
+}
+
+.widget-traffic .traffic-time::after {
+  content: ' ●';
+}
+
+.widget-traffic .traffic-time-normal::after {
+  color: green;
+}
+
+.widget-traffic .traffic-time-delayed::after {
+  color: yellow;
+}
+
+.widget-traffic .traffic-time-severe::after {
+  color: red;
+}

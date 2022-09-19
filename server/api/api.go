@@ -1,10 +1,13 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"main/core"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -26,6 +29,8 @@ func jsonResponse(w http.ResponseWriter, j interface{}) {
 	w.Write(bytes)
 }
 
+const defaultWait = time.Second * 5
+
 func New(services []core.Service) http.Handler {
 	r := chi.NewRouter()
 
@@ -38,18 +43,41 @@ func New(services []core.Service) http.Handler {
 		w.WriteHeader(200)
 	})
 
-	r.Get("/api/info", func(w http.ResponseWriter, r *http.Request) {
-		//TODO context parsing
-		output := make(map[string]interface{})
-		for _, service := range services {
-			info, err := service.Info(r.Context())
-			if err != nil {
-				handleError(w, err, http.StatusInternalServerError)
-				return
+	output := make(map[string]interface{})
+	outputLock := new(sync.RWMutex)
+	go func() {
+		for {
+			for _, service := range services {
+				name := service.Name()
+				if _, ok := output[name]; !ok || service.NeedsRefresh() {
+					var err error
+					waitDelay := defaultWait
+					for err != nil || waitDelay == defaultWait {
+						log.Printf("Updating %s", name)
+						waitDelay = waitDelay * 2
+						info, err := service.Info(context.Background())
+						if err != nil {
+							log.Printf("Error: \"%s\". Sleeping %s", err.Error(), waitDelay.String())
+							time.Sleep(waitDelay)
+							if waitDelay > time.Second*30 {
+								break
+							}
+						} else {
+							outputLock.Lock()
+							output[name] = info
+							outputLock.Unlock()
+						}
+					}
+				}
 			}
-			output[service.Name()] = info
+			time.Sleep(time.Minute * 5)
 		}
+	}()
+
+	r.Get("/api/info", func(w http.ResponseWriter, r *http.Request) {
+		outputLock.RLock()
 		jsonResponse(w, output)
+		outputLock.RUnlock()
 	})
 	return r
 }

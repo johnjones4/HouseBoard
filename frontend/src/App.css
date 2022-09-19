@@ -25,6 +25,7 @@ body {
   padding: 0.5em 0.75em 0.75em 0.75em;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .widget-title {
@@ -89,4 +90,24 @@ body {
   grid-column-end: 13;
   grid-row-start: 1;
   grid-row-end: 2;
+}
+
+.widget table {
+  width: 100%;
+}
+
+.widget table th {
+  text-transform: uppercase;
+  font-weight: normal;
+}
+
+.widget table tr:nth-child(even) td {
+  background-color: #fafafa;
+}
+
+.widget table td {
+  font-size: 0.9em;
+  padding: 0.5em 0.25em;
+  margin: 0;
+  border: none;
 }

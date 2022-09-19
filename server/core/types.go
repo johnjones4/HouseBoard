@@ -15,4 +15,5 @@ type ServiceConfig interface {
 type Service interface {
 	Name() string
 	Info(c context.Context) (interface{}, error)
+	NeedsRefresh() bool
 }

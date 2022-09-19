@@ -16,20 +16,20 @@ type event struct {
 	Label string    `json:"label"`
 }
 
-type ICalConfiguration struct {
+type iCalConfiguration struct {
 	URLs map[string]string `json:"urls"`
 }
 
-func (c ICalConfiguration) Empty() bool {
+func (c iCalConfiguration) Empty() bool {
 	return len(c.URLs) == 0
 }
 
-func (c ICalConfiguration) Service() core.Service {
+func (c iCalConfiguration) Service() core.Service {
 	return &iCal{c}
 }
 
 type iCal struct {
-	configuration ICalConfiguration
+	configuration iCalConfiguration
 }
 
 func (i *iCal) Name() string {
@@ -52,6 +52,10 @@ func (i *iCal) Info(c context.Context) (interface{}, error) {
 	return output, nil
 }
 
+func (i *iCal) NeedsRefresh() bool {
+	return true
+}
+
 func getCalendar(url string) (*ical.Calendar, error) {
 	res, err := http.Get(url)
 	if err != nil {
@@ -62,6 +66,8 @@ func getCalendar(url string) (*ical.Calendar, error) {
 }
 
 func extractEvents(label string, cal *ical.Calendar) ([]event, error) {
+	now := time.Now()
+	plus60Days := now.Add(time.Hour * 24 * 60)
 	events := make([]event, 0)
 	for _, comp := range cal.Components {
 		if icalEvent, ok := comp.(*ical.VEvent); ok {
@@ -75,13 +81,15 @@ func extractEvents(label string, cal *ical.Calendar) ([]event, error) {
 					if err != nil {
 						return nil, err
 					}
-					event := event{
-						Title: icalEvent.GetProperty(ical.ComponentPropertySummary).Value,
-						Start: start,
-						End:   end,
-						Label: label,
+					if (start.After(now) || end.After(now)) && (start.Before(plus60Days) || end.Before(plus60Days)) {
+						event := event{
+							Title: icalEvent.GetProperty(ical.ComponentPropertySummary).Value,
+							Start: start,
+							End:   end,
+							Label: label,
+						}
+						events = append(events, event)
 					}
-					events = append(events, event)
 				}
 			}
 		}

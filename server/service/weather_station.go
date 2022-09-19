@@ -9,25 +9,25 @@ import (
 	"time"
 )
 
-type WeatherStationConfiguration struct {
+type weatherStationConfiguration struct {
 	Upstream string `json:"upstream"`
 }
 
-func (c WeatherStationConfiguration) Empty() bool {
+func (c weatherStationConfiguration) Empty() bool {
 	return c.Upstream == ""
 }
 
-func (c WeatherStationConfiguration) Service() core.Service {
+func (c weatherStationConfiguration) Service() core.Service {
 	return &weatherStation{
 		configuration: c,
 	}
 }
 
 type weatherStation struct {
-	configuration WeatherStationConfiguration
+	configuration weatherStationConfiguration
 }
 
-type WeatherStatonResponse struct {
+type weatherStatonResponse struct {
 	Timestamp        time.Time `json:"timestamp"`
 	Uptime           int64     `json:"uptime"`
 	AvgWindSpeed     float64   `json:"avg_wind_speed"`
@@ -46,19 +46,23 @@ func (w *weatherStation) Name() string {
 func (w *weatherStation) Info(c context.Context) (interface{}, error) {
 	res, err := http.Get(w.configuration.Upstream)
 	if err != nil {
-		return WeatherStatonResponse{}, nil
+		return weatherStatonResponse{}, nil
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return WeatherStatonResponse{}, nil
+		return weatherStatonResponse{}, nil
 	}
 
-	var info WeatherStatonResponse
+	var info weatherStatonResponse
 	err = json.Unmarshal(body, &info)
 	if err != nil {
-		return WeatherStatonResponse{}, nil
+		return weatherStatonResponse{}, nil
 	}
 
 	return info, nil
+}
+
+func (w *weatherStation) NeedsRefresh() bool {
+	return true
 }

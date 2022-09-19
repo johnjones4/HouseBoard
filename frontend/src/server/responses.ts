@@ -37,8 +37,19 @@ export interface WeatherStationResponse {
   pressure: number
 }
 
+export interface TrafficDestinationResponse {
+  destination: string
+  expectedDuration: number
+  estimatedDuration: number
+}
+
+export interface TrafficResponse {
+  destinations: TrafficDestinationResponse[]
+}
+
 export interface InfoResponse {
   ical: ICalResponse
   noaa: NOAAResponse
   weatherstation: WeatherStationResponse
+  traffic: TrafficResponse
 }
