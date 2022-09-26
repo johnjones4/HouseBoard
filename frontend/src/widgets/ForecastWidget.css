@@ -60,35 +60,35 @@
 }
 
 .widget-forecast .forecast-wind-n::before {
-  content: '↑';
-}
-
-.widget-forecast .forecast-wind-ne::before {
-  content: '↗';
-}
-
-.widget-forecast .forecast-wind-e::before {
-  content: '→';
-}
-
-.widget-forecast .forecast-wind-se::before {
-  content: '↘';
-}
-
-.widget-forecast .forecast-wind-s::before {
   content: '↓';
 }
 
-.widget-forecast .forecast-wind-sw::before {
+.widget-forecast .forecast-wind-ne::before {
   content: '↙';
 }
 
-.widget-forecast .forecast-wind-w::before {
+.widget-forecast .forecast-wind-e::before {
   content: '←';
 }
 
-.widget-forecast .forecast-wind-nw::before {
+.widget-forecast .forecast-wind-se::before {
   content: '↖';
+}
+
+.widget-forecast .forecast-wind-s::before {
+  content: '↑';
+}
+
+.widget-forecast .forecast-wind-sw::before {
+  content: '↗';
+}
+
+.widget-forecast .forecast-wind-w::before {
+  content: '→';
+}
+
+.widget-forecast .forecast-wind-nw::before {
+  content: '↘';
 }
 
 .widget-forecast .forecast-description {
