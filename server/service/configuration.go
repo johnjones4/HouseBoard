@@ -7,6 +7,7 @@ type Configuration struct {
 	NOAA           noaaConfiguration           `json:"noaa"`
 	WeatherStation weatherStationConfiguration `json:"weatherStation"`
 	Traffic        trafficConfiguration        `json:"traffic"`
+	Trello         trelloConfiguration         `json:"trello"`
 }
 
 func (c Configuration) Configurations() []core.ServiceConfig {
@@ -15,5 +16,6 @@ func (c Configuration) Configurations() []core.ServiceConfig {
 		c.NOAA,
 		c.WeatherStation,
 		c.Traffic,
+		c.Trello,
 	}
 }

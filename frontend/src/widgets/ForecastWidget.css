@@ -11,7 +11,7 @@
   border-right: solid 1px #ddd;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: top;
 }
 
 .widget-forecast .forecast-item:last-child {

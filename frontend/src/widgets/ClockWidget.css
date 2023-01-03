@@ -6,6 +6,7 @@
 
 .widget-clock .clock-str {
   text-align: center;
-  font-size: 2.5em;
+  font-size: 3em;
   margin-bottom: 0.5em;
+  font-family: 'Major Mono Display', monospace;
 }

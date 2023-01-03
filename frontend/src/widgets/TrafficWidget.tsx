@@ -30,7 +30,7 @@ const TrafficWidget = (props: TrafficWidgetProps) => {
         </thead>
         <tbody>
           {props.info.traffic.destinations.map(d => (
-            <tr>
+            <tr key={d.destination}>
               <td>{d.destination}</td>
               <td className={'traffic-time ' + timeClass(d)}>{fancyTimeFormat(d.estimatedDuration)}</td>
             </tr>

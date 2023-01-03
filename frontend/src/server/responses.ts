@@ -27,14 +27,12 @@ export interface NOAAResponse {
 
 export interface WeatherStationResponse {
   timestamp: string
-  uptime: number
-  avg_wind_speed: number
-  min_wind_speed: number
-  max_wind_speed: number
+  anemometerMax: number
   temperature: number
   gas: number
-  relative_humidity: number
+  relativeHumidity: number
   pressure: number
+  vaneDirection: number
 }
 
 export interface TrafficDestinationResponse {
@@ -47,9 +45,20 @@ export interface TrafficResponse {
   destinations: TrafficDestinationResponse[]
 }
 
+export interface TrelloCardResponse {
+  name: string
+  id: string
+}
+
+export interface TrelloListResponse {
+  cards: TrelloCardResponse[]
+  name: string
+}
+
 export interface InfoResponse {
   ical: ICalResponse
   noaa: NOAAResponse
   weatherstation: WeatherStationResponse
   traffic: TrafficResponse
+  trello: TrelloListResponse[]
 }

@@ -1,4 +1,4 @@
-import { ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAResponse, TrafficDestinationResponse, TrafficResponse, WeatherStationResponse } from "./responses"
+import { ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAResponse, TrafficDestinationResponse, TrafficResponse, TrelloCardResponse, TrelloListResponse, WeatherStationResponse } from "./responses"
 
 export class ICalEvent {
   title: string
@@ -68,25 +68,21 @@ export class NOAA {
 
 export class WeatherStation {
   timestamp: Date
-  uptime: number
-  avgWindSpeed: number
-  minWindSpeed: number
-  maxWindSpeed: number
+  anemometerMax: number
   temperature: number
   gas: number
   relativeHumidity: number
   pressure: number
+  vaneDirection: number
 
   constructor(r: WeatherStationResponse) {
     this.timestamp = new Date(Date.parse(r.timestamp))
-    this.uptime = r.uptime
-    this.avgWindSpeed = r.avg_wind_speed
-    this.minWindSpeed = r.min_wind_speed
-    this.maxWindSpeed = r.max_wind_speed
+    this.anemometerMax = r.anemometerMax
     this.temperature = r.temperature
     this.gas = r.gas
-    this.relativeHumidity = r.relative_humidity
+    this.relativeHumidity = r.relativeHumidity
     this.pressure = r.pressure
+    this.vaneDirection = r.vaneDirection
   }
 }
 
@@ -110,16 +106,38 @@ export class Traffic {
   }
 }
 
+export class TrelloCard {
+  name: string
+  id: string
+
+  constructor(r: TrelloCardResponse) {
+    this.name = r.name
+    this.id = r.id
+  }
+}
+
+export class TrelloList {
+  cards: TrelloCardResponse[]
+  name: string
+
+  constructor(r: TrelloListResponse) {
+    this.name = r.name
+    this.cards = r.cards.map(c => new TrelloCard(c))
+  }
+}
+
 export class Info {
   ical: ICal
   noaa: NOAA
   weatherstation: WeatherStation
   traffic: Traffic
+  trello: TrelloList[]
   
   constructor(r: InfoResponse) {
     this.ical = new ICal(r.ical)
     this.noaa = new NOAA(r.noaa)
     this.weatherstation = new WeatherStation(r.weatherstation)
     this.traffic = new Traffic(r.traffic)
+    this.trello = r.trello.map(t => new TrelloList(t))
   }
 }

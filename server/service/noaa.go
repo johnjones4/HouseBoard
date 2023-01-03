@@ -101,7 +101,7 @@ func (f *noaa) predictWeather(coord core.Coordinate) (weather, error) {
 		return weather{}, err
 	}
 
-	radarURL := fmt.Sprintf("https://radar.weather.gov/ridge/lite/%s_loop.gif?v=%d", point.RadarStation, time.Now().Unix())
+	radarURL := fmt.Sprintf("https://radar.weather.gov/ridge/standard/%s_loop.gif?refreshed=%d", point.RadarStation, time.Now().Unix())
 
 	forecast, err := makeWeatherAPIForecastCall(point)
 	if err != nil {
@@ -140,18 +140,18 @@ func makeWeatherAPIPointRequest(coord core.Coordinate) (noaaWeatherPointProperti
 func makeWeatherAPIForecastCall(point noaaWeatherPointProperties) ([]noaaWeatherForecastPeriod, error) {
 	httpResponse, err := http.Get(point.ForecastURL)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	responseBytes, err := ioutil.ReadAll(httpResponse.Body)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	var response noaaWeatherForecastResponse
 	err = json.Unmarshal(responseBytes, &response)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	if len(response.Properties.Periods) == 0 {

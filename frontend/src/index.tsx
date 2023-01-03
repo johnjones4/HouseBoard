@@ -11,3 +11,4 @@ root.render(
   </React.StrictMode>
 );
 
+setTimeout(() => window.location.reload(), 1000 * 60 * 60)

@@ -21,7 +21,7 @@
 }
 
 .widget-calendar .calendar-item {
-  background: #fafafa;
+  background: var(--color-black-2);
   padding: 5px;
 }
 
@@ -44,17 +44,17 @@
 }
 
 .widget-calendar .calendar-item-event-0 {
-  color: blue;
+  color: var(--color-green);
 }
 
 .widget-calendar .calendar-item-event-1 {
-  color: green;
+  color: var(--color-blue);
 }
 
 .widget-calendar .calendar-item-event-2 {
-  color: yellow;
+  color: var(--color-yellow);
 }
 
 .widget-calendar .calendar-item-event-3 {
-  color: red;
+  color: var(--color-red);
 }

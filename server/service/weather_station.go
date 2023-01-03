@@ -29,14 +29,18 @@ type weatherStation struct {
 
 type weatherStatonResponse struct {
 	Timestamp        time.Time `json:"timestamp"`
-	Uptime           int64     `json:"uptime"`
-	AvgWindSpeed     float64   `json:"avg_wind_speed"`
-	MinWindSpeed     float64   `json:"min_wind_speed"`
-	MaxWindSpeed     float64   `json:"max_wind_speed"`
+	AvgWindSpeed     float64   `json:"anemometerAverage"`
+	MinWindSpeed     float64   `json:"anemometerMin"`
+	MaxWindSpeed     float64   `json:"anemometerMax"`
 	Temperature      float64   `json:"temperature"`
 	Gas              float64   `json:"gas"`
-	RelativeHumidity float64   `json:"relative_humidity"`
+	RelativeHumidity float64   `json:"relativeHumidity"`
 	Pressure         float64   `json:"pressure"`
+	VaneDirection    float64   `json:"vaneDirection"`
+}
+
+type weatherStationResponseBody struct {
+	Items []weatherStatonResponse `json:"items"`
 }
 
 func (w *weatherStation) Name() string {
@@ -46,21 +50,25 @@ func (w *weatherStation) Name() string {
 func (w *weatherStation) Info(c context.Context) (interface{}, error) {
 	res, err := http.Get(w.configuration.Upstream)
 	if err != nil {
-		return weatherStatonResponse{}, nil
+		return weatherStatonResponse{}, err
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return weatherStatonResponse{}, nil
+		return weatherStatonResponse{}, err
 	}
 
-	var info weatherStatonResponse
+	var info weatherStationResponseBody
 	err = json.Unmarshal(body, &info)
 	if err != nil {
+		return weatherStatonResponse{}, err
+	}
+
+	if len(info.Items) == 0 {
 		return weatherStatonResponse{}, nil
 	}
 
-	return info, nil
+	return info.Items[len(info.Items)-1], nil
 }
 
 func (w *weatherStation) NeedsRefresh() bool {

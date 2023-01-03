@@ -9,6 +9,7 @@ import ForecastWidget from './widgets/ForecastWidget';
 import RadarWidget from './widgets/RadarWidget';
 import WeatherStationWidget from './widgets/WeatherStationWidget';
 import ClockWidget from './widgets/ClockWidget';
+import TrelloWidget from './widgets/TrelloWidget';
 
 function App() {
   const [info, setInfo] = useState(undefined as Info | undefined)
@@ -17,7 +18,6 @@ function App() {
     const callServer = () => {
       getInfo()
       .then(i => {
-        console.log(i)
         setInfo(i)
       })
       .catch(e => console.error(e))
@@ -35,9 +35,9 @@ function App() {
       <TrafficWidget info={info} />
       <ForecastWidget info={info} />
       <RadarWidget info={info} />
-      <Widget name='services' title='Services' />
       <WeatherStationWidget info={info} />
       <ClockWidget info={info} />
+      <TrelloWidget info={info} />
     </div>
   )
 }
