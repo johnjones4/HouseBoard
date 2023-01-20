@@ -15,3 +15,17 @@ export const fancyTimeFormat = (duration: number): string => {
   ret += "" + secs;
   return ret;
 }
+
+export const hoursMinutesString = (t: Date): string => {
+  let h = t.getHours()
+  let ap = 'AM'
+  if (h > 12) {
+    h -= 12
+    ap = 'PM'
+  }
+  let m = `${t.getMinutes()}`
+  if (m.length !== 2) {
+    m = '0' + m
+  }
+  return `${h}:${m} ${ap}`
+}

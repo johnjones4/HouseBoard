@@ -2,12 +2,19 @@ import React from 'react'
 import { ICal, ICalEvent, Info } from '../server/types'
 import Widget from './Widget'
 import './CalendarWidget.css'
+import { hoursMinutesString } from '../util'
 
 interface CalendarWidgetProps {
   info: Info
 }
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa']
+
+const timeString = (event: ICalEvent): string => {
+  const start = hoursMinutesString(event.start)
+  const end = hoursMinutesString(event.end)
+  return start === end ? '' : `${start} | `
+}
 
 const CalendarWidget = (props: CalendarWidgetProps) => {
   const calendar = makeCalendarArray(props.info.ical.calendars)
@@ -30,7 +37,9 @@ const CalendarWidget = (props: CalendarWidgetProps) => {
                   {c.events.map((e, j) => {
                     const labelIndex = props.info.ical.labels.indexOf(e.label)
                     return (
-                      <li className={`calendar-item-event calendar-item-event-${labelIndex}`} key={j}>{e.title}</li>
+                      <li className={`calendar-item-event calendar-item-event-${labelIndex}`} key={j}>
+                        {timeString(e)}{e.title}
+                      </li>
                     )
                   })}
                 </ul>

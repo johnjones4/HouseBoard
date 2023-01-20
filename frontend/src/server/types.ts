@@ -26,6 +26,7 @@ export class ICal {
       }
       return new ICalEvent(r)
     })
+    this.labels.sort()
   }
 }
 
