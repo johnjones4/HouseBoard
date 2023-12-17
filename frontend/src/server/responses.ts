@@ -7,6 +7,11 @@ export interface ICalEventResponse {
 
 export type ICalResponse = ICalEventResponse[]
 
+export interface NOAAForecastValue {
+  value: number
+  unitCode: string
+}
+
 export interface NOAAForecastItemResponse {
   startTime: string
   endTime: string
@@ -18,6 +23,9 @@ export interface NOAAForecastItemResponse {
   windDirection: string
   icon: string
   isDaytime: boolean
+  probabilityOfPrecipitation: NOAAForecastValue
+  relativeHumidity: NOAAForecastValue
+  dewpoint: NOAAForecastValue
 }
 
 export interface NOAAResponse {
@@ -55,10 +63,15 @@ export interface TrelloListResponse {
   name: string
 }
 
+export interface FileResponse {
+  files: string[]
+}
+
 export interface InfoResponse {
   ical: ICalResponse
   noaa: NOAAResponse
   weatherstation: WeatherStationResponse
   traffic: TrafficResponse
   trello: TrelloListResponse[]
+  file: FileResponse
 }

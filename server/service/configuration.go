@@ -8,6 +8,7 @@ type Configuration struct {
 	WeatherStation weatherStationConfiguration `json:"weatherStation"`
 	Traffic        trafficConfiguration        `json:"traffic"`
 	Trello         trelloConfiguration         `json:"trello"`
+	Files          fileConfiguration           `json:"file"`
 }
 
 func (c Configuration) Configurations() []core.ServiceConfig {
@@ -17,5 +18,6 @@ func (c Configuration) Configurations() []core.ServiceConfig {
 		c.WeatherStation,
 		c.Traffic,
 		c.Trello,
+		c.Files,
 	}
 }

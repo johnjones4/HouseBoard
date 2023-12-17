@@ -93,6 +93,14 @@ body {
   grid-row-end: 7;
 }
 
+.widget-file {
+  grid-column-start: 4;
+  grid-column-end: 8;
+  grid-row-start: 5;
+  grid-row-end: 7;
+}
+
+
 .widget-weather-station {
   grid-column-start: 1;
   grid-column-end: 4;

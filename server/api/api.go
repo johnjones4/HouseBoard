@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"go.uber.org/zap"
 )
 
 func handleError(w http.ResponseWriter, err error, status int) {
@@ -31,7 +32,7 @@ func jsonResponse(w http.ResponseWriter, j interface{}) {
 
 const defaultWait = time.Second * 5
 
-func New(services []core.Service) http.Handler {
+func New(services []core.Service, log *zap.SugaredLogger) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -46,6 +47,7 @@ func New(services []core.Service) http.Handler {
 	output := make(map[string]interface{})
 	outputLock := new(sync.RWMutex)
 	go func() {
+		log.Info("Starting poller")
 		for {
 			for _, service := range services {
 				name := service.Name()
@@ -53,11 +55,11 @@ func New(services []core.Service) http.Handler {
 					var err error
 					waitDelay := defaultWait
 					for err != nil || waitDelay == defaultWait {
-						log.Printf("Updating %s", name)
+						log.Infof("Updating %s", name)
 						waitDelay = waitDelay * 2
 						info, err := service.Info(context.Background())
 						if err != nil {
-							log.Printf("Error: \"%s\". Sleeping %s", err.Error(), waitDelay.String())
+							log.Errorf("Error: \"%s\". Sleeping %s", err.Error(), waitDelay.String())
 							time.Sleep(waitDelay)
 							if waitDelay > time.Second*30 {
 								break

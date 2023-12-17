@@ -1,4 +1,4 @@
-import { ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAResponse, TrafficDestinationResponse, TrafficResponse, TrelloCardResponse, TrelloListResponse, WeatherStationResponse } from "./responses"
+import { FileResponse, ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAForecastValue, NOAAResponse, TrafficDestinationResponse, TrafficResponse, TrelloCardResponse, TrelloListResponse, WeatherStationResponse } from "./responses"
 
 export class ICalEvent {
   title: string
@@ -32,6 +32,7 @@ export class ICal {
 
 export class NOAAForecastItem {
   startTime: Date
+  time: Date
   endTime: Date
   detailedForecast: string
   name: string
@@ -41,10 +42,14 @@ export class NOAAForecastItem {
   windDirection: string 
   icon: string
   isDaytime: boolean
+  probabilityOfPrecipitation: NOAAForecastValue
+  relativeHumidity: NOAAForecastValue
+  dewpoint: NOAAForecastValue
 
   constructor(r: NOAAForecastItemResponse) {
     this.startTime = new Date(Date.parse(r.startTime))
     this.endTime = new Date(Date.parse(r.endTime))
+    this.time = new Date(this.startTime.getTime() + ((this.endTime.getTime() - this.startTime.getTime()) / 2 ))
     this.detailedForecast = r.detailedForecast
     this.name = r.name
     this.temperature = r.temperature
@@ -53,6 +58,9 @@ export class NOAAForecastItem {
     this.windDirection = r.windDirection
     this.icon = r.icon
     this.isDaytime = r.isDaytime
+    this.probabilityOfPrecipitation = r.probabilityOfPrecipitation
+    this.relativeHumidity = r.relativeHumidity
+    this.dewpoint = r.dewpoint
   }
 }
 
@@ -127,12 +135,21 @@ export class TrelloList {
   }
 }
 
+export class File {
+  files: string[]
+
+  constructor(r: FileResponse) {
+    this.files = r.files
+  }
+}
+
 export class Info {
   ical: ICal
   noaa: NOAA
   weatherstation: WeatherStation
   traffic: Traffic
   trello: TrelloList[]
+  file: File
   
   constructor(r: InfoResponse) {
     this.ical = new ICal(r.ical)
@@ -140,5 +157,6 @@ export class Info {
     this.weatherstation = new WeatherStation(r.weatherstation)
     this.traffic = new Traffic(r.traffic)
     this.trello = r.trello.map(t => new TrelloList(t))
+    this.file = new File(r.file)
   }
 }

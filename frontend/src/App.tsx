@@ -10,6 +10,7 @@ import RadarWidget from './widgets/RadarWidget';
 import WeatherStationWidget from './widgets/WeatherStationWidget';
 import ClockWidget from './widgets/ClockWidget';
 import TrelloWidget from './widgets/TrelloWidget';
+import FileWidget from './widgets/FileWidget';
 
 function App() {
   const [info, setInfo] = useState(undefined as Info | undefined)
@@ -37,7 +38,8 @@ function App() {
       <RadarWidget info={info} />
       <WeatherStationWidget info={info} />
       <ClockWidget info={info} />
-      <TrelloWidget info={info} />
+      {/* <TrelloWidget info={info} /> */}
+      <FileWidget info={info} />
     </div>
   )
 }

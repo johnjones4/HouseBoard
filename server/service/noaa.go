@@ -28,17 +28,25 @@ type noaaWeatherPointResponse struct {
 	Properties noaaWeatherPointProperties `json:"properties"`
 }
 
+type noaaWeatherValue struct {
+	Value    float64 `json:"value"`
+	UnitCode string  `json:"unitCode"`
+}
+
 type noaaWeatherForecastPeriod struct {
-	StartTime        time.Time `json:"startTime"`
-	EndTime          time.Time `json:"endTime"`
-	DetailedForecast string    `json:"detailedForecast"`
-	Name             string    `json:"name"`
-	Temperature      float64   `json:"temperature"`
-	TemperatureUnit  string    `json:"temperatureUnit"`
-	WindSpeed        string    `json:"windSpeed"`
-	WindDirection    string    `json:"windDirection"`
-	Icon             string    `json:"icon"`
-	IsDaytime        bool      `json:"isDaytime"`
+	StartTime                  time.Time        `json:"startTime"`
+	EndTime                    time.Time        `json:"endTime"`
+	DetailedForecast           string           `json:"detailedForecast"`
+	Name                       string           `json:"name"`
+	Temperature                float64          `json:"temperature"`
+	TemperatureUnit            string           `json:"temperatureUnit"`
+	WindSpeed                  string           `json:"windSpeed"`
+	WindDirection              string           `json:"windDirection"`
+	Icon                       string           `json:"icon"`
+	IsDaytime                  bool             `json:"isDaytime"`
+	ProbabilityOfPrecipitation noaaWeatherValue `json:"probabilityOfPrecipitation"`
+	RelativeHumidity           noaaWeatherValue `json:"relativeHumidity"`
+	Dewpoint                   noaaWeatherValue `json:"dewpoint"`
 }
 
 type noaaWeatherForecastProperties struct {
