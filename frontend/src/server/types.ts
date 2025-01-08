@@ -1,4 +1,4 @@
-import { FileResponse, ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAForecastValue, NOAAResponse, TrafficDestinationResponse, TrafficResponse, TrelloCardResponse, TrelloListResponse, WeatherStationResponse } from "./responses"
+import { FileResponse, ICalEventResponse, ICalResponse, InfoResponse, NOAAForecastItemResponse, NOAAForecastValue, NOAAResponse, OWMWeatherResponse, OWMWeatherResponseBody, TrafficDestinationResponse, TrafficResponse, TrelloCardResponse, TrelloListResponse, WeatherStationResponse } from "./responses"
 
 export class ICalEvent {
   title: string
@@ -72,6 +72,34 @@ export class NOAA {
   constructor(r: NOAAResponse) {
     this.radarURL = r.radarURL
     this.forecast = r.forecast.map(i => new NOAAForecastItem(i))
+  }
+}
+
+export class OpenWeatherMapForecastItem {
+  timestamp: Date
+  temp: number
+  pressure: number
+  humidity: number
+  pop: number
+  windSpeed: number
+  cloudCov: number
+
+  constructor(f: OWMWeatherResponse) {
+    this.timestamp = new Date(f.dt * 1000)
+    this.temp = f.main.temp
+    this.pressure = f.main.pressure
+    this.humidity = f.main.humidity
+    this.pop = f.pop
+    this.windSpeed = f.wind.speed
+    this.cloudCov = f.clouds.all
+  }
+}
+
+export class OpenWeatherMapForecast {
+  forecast: OpenWeatherMapForecastItem[]
+
+  constructor(r: OWMWeatherResponseBody) {
+    this.forecast = r.list.map(f => new OpenWeatherMapForecastItem(f))
   }
 }
 
@@ -150,6 +178,7 @@ export class Info {
   traffic: Traffic
   trello: TrelloList[]
   file: File
+  openWeatherMap: OpenWeatherMapForecast
   
   constructor(r: InfoResponse) {
     this.ical = new ICal(r.ical)
@@ -158,5 +187,6 @@ export class Info {
     this.traffic = new Traffic(r.traffic)
     this.trello = r.trello.map(t => new TrelloList(t))
     this.file = new File(r.file)
+    this.openWeatherMap = new OpenWeatherMapForecast(r.openWeatherMap)
   }
 }

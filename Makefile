@@ -8,7 +8,7 @@ info:
 	echo ${PROJECT} ${VERSION}
 
 container:
-	docker build -t ${TAG} ./server
+	docker build --platform linux/x86_64 -t ${TAG} ./server
 	docker push ${TAG}:latest
 	docker image rm ${TAG}:latest
 

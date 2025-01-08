@@ -67,6 +67,62 @@ export interface FileResponse {
   files: string[]
 }
 
+export interface OWMWeatherResponseBody {
+  list: OWMWeatherResponse[]
+}
+
+// Main weather response structure
+export interface OWMWeatherResponse {
+  dt: number;
+  main: OWMMain;
+  weather: OWMWeather[];
+  clouds: OWMClouds;
+  wind: OWMWind;
+  visibility: number;
+  pop: number;
+  sys: OWMSys;
+  dt_txt: string;
+}
+
+// Main temperature details
+export interface OWMMain {
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+  pressure: number;
+  sea_level: number;
+  grnd_level: number;
+  humidity: number;
+  temp_kf: number;
+}
+
+// Weather condition details
+export interface OWMWeather {
+  id: number;
+  main: string;
+  description: string;
+  icon: string;
+}
+
+// Cloud coverage details
+export interface OWMClouds {
+  all: number;
+}
+
+// Wind details
+export interface OWMWind {
+  speed: number;
+  deg: number;
+  gust: number;
+}
+
+// System details
+export interface OWMSys {
+  pod: string;
+}
+
+
 export interface InfoResponse {
   ical: ICalResponse
   noaa: NOAAResponse
@@ -74,4 +130,5 @@ export interface InfoResponse {
   traffic: TrafficResponse
   trello: TrelloListResponse[]
   file: FileResponse
+  openWeatherMap: OWMWeatherResponseBody
 }

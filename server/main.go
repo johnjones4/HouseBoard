@@ -7,32 +7,13 @@ import (
 	"main/service"
 	"net/http"
 	"os"
-	"strconv"
 
-	"github.com/johnjones4/errorbot"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func main() {
-	chatId, err := strconv.Atoi(os.Getenv("TELEGRAM_CHAT_ID"))
-	if err != nil {
-		panic(err)
-	}
-	bot := errorbot.New(
-		"houseboard",
-		os.Getenv("TELEGRAM_TOKEN"),
-		chatId,
-	)
-
 	config := zap.NewDevelopmentConfig()
-	l, err := config.Build(zap.Hooks(bot.ZapHook([]zapcore.Level{
-		zapcore.FatalLevel,
-		zapcore.PanicLevel,
-		zapcore.DPanicLevel,
-		zapcore.ErrorLevel,
-		zapcore.WarnLevel,
-	})))
+	l, err := config.Build()
 	if err != nil {
 		panic(err)
 	}

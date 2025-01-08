@@ -43,5 +43,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://houseboard.house.johnjonesfour.com/"
+  "proxy": "http://localhost:8080/"
 }
