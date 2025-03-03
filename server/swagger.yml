@@ -1,0 +1,233 @@
+openapi: "3.0.0"
+paths:
+  /info:
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+components:
+  schemas:
+    Info:
+      required:
+      properties:
+        files:
+          $ref: '#/components/schemas/Files'
+        events:
+          $ref: '#/components/schemas/Events'
+        forecast:
+          $ref: '#/components/schemas/Forecast'
+        trello:
+          $ref: '#/components/schemas/Trello'
+        weatherStation:
+          $ref: '#/components/schemas/WeatherStation'
+        traffic:
+          $ref: '#/components/schemas/Traffic'
+        summary: 
+          $ref: '#/components/schemas/Summary'
+    Summary:
+      required:
+        - summary
+      properties:
+        summary:
+          type: string
+    Files:
+      required:
+        - files
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+    Event:
+      type: object
+      properties:
+        title:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        label:
+          type: string
+      required:
+        - title
+        - start
+        - end
+        - label
+    Events:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+      required:
+        - events
+
+    Forecast:
+      type: object
+      properties:
+        radarURL:
+          type: string
+          format: uri
+        forecast:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForecastPeriod'
+        alerts:
+          type: array
+          items:
+            type: string
+      required:
+        - radarURL
+        - forecast
+        - alerts
+
+    ForecastPeriod:
+      type: object
+      properties:
+        datetime:
+          type: string
+          format: date-time
+        temperature:
+          type: number
+          format: double
+        feelsLike:
+          type: number
+          format: double
+        windSpeed:
+          type: number
+          format: double
+        probabilityOfPrecipitation:
+          type: number
+          format: double
+        relativeHumidity:
+          type: number
+          format: double
+        pressure:
+          type: number
+          format: double
+      required:
+        - datetime
+        - temperature
+        - feelsLike
+        - windSpeed
+        - probabilityOfPrecipitation
+        - relativeHumidity
+        - pressure
+
+    TrafficDestination:
+      type: object
+      properties:
+        destination:
+          type: string
+        expectedDuration:
+          type: integer
+          description: "Expected travel duration in seconds."
+        estimatedDuration:
+          type: integer
+          description: "Estimated travel duration in seconds based on current conditions."
+      required:
+        - destination
+        - expectedDuration
+        - estimatedDuration
+
+    Traffic:
+      type: object
+      properties:
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrafficDestination'
+      required:
+        - destinations
+
+    Trello:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/List'
+      required:
+        - list
+
+    List:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+        name:
+          type: string
+      required:
+        - cards
+        - name
+
+    Card:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - name
+
+    WeatherStation:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: "The timestamp of the weather station data."
+        anemometerAverage:
+          type: number
+          format: double
+          description: "Average wind speed measured by the anemometer."
+        anemometerMin:
+          type: number
+          format: double
+          description: "Minimum wind speed measured by the anemometer."
+        anemometerMax:
+          type: number
+          format: double
+          description: "Maximum wind speed measured by the anemometer."
+        temperature:
+          type: number
+          format: double
+          description: "Current temperature in degrees Celsius."
+        gas:
+          type: number
+          format: double
+          description: "Gas concentration level measured."
+        relativeHumidity:
+          type: number
+          format: double
+          description: "Relative humidity percentage."
+        pressure:
+          type: number
+          format: double
+          description: "Atmospheric pressure in hPa."
+        vaneDirection:
+          type: number
+          format: double
+          description: "Wind direction in degrees from the vane."
+      required:
+        - timestamp
+        - anemometerAverage
+        - anemometerMin
+        - anemometerMax
+        - temperature
+        - gas
+        - relativeHumidity
+        - pressure
+        - vaneDirection

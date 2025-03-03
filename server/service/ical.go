@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"main/core"
 	"net/http"
 	"strings"
 	"time"
@@ -12,58 +12,65 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-type event struct {
+type Event struct {
 	Title string    `json:"title"`
 	Start time.Time `json:"start"`
 	End   time.Time `json:"end"`
 	Label string    `json:"label"`
 }
 
+type iCalCalendar struct {
+	URL         string `json:"url"`
+	Description string `json:"description"`
+}
+
 type iCalConfiguration struct {
-	URLs map[string]string `json:"urls"`
+	URLs map[string]iCalCalendar `json:"urls"`
 }
 
 func (c iCalConfiguration) Empty() bool {
 	return len(c.URLs) == 0
 }
 
-func (c iCalConfiguration) Service() core.Service {
-	return &iCal{c}
+func (c iCalConfiguration) Service() *ICal {
+	return &ICal{c, nil}
 }
 
-type iCal struct {
+type ICal struct {
 	configuration iCalConfiguration
+	Events        []Event
 }
 
-func (i *iCal) Name() string {
+func (i *ICal) Name() string {
 	return "ical"
 }
 
-func (i *iCal) Info(c context.Context) (interface{}, error) {
-	output := make([]event, 0)
-	for name, url := range i.configuration.URLs {
-		cal, err := getCalendar(url)
+func (i *ICal) Refresh(c context.Context) error {
+	output := make([]Event, 0)
+	for name, info := range i.configuration.URLs {
+		cal, err := getCalendar(info.URL)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		var events []event
+		var events []Event
 		if iical, ok := cal.(*ical.Calendar); ok {
 			events, err = extractIcalEvents(name, iical)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		} else if feed, ok := cal.(*gofeed.Feed); ok {
 			events, err = extractRssEvents(name, feed)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		}
 		output = append(output, events...)
 	}
-	return output, nil
+	i.Events = output
+	return nil
 }
 
-func (i *iCal) NeedsRefresh() bool {
+func (i *ICal) NeedsRefresh() bool {
 	return true
 }
 
@@ -81,10 +88,10 @@ func getCalendar(url string) (any, error) {
 	}
 }
 
-func extractIcalEvents(label string, cal *ical.Calendar) ([]event, error) {
+func extractIcalEvents(label string, cal *ical.Calendar) ([]Event, error) {
 	now := time.Now()
 	plus60Days := now.Add(time.Hour * 24 * 60)
-	events := make([]event, 0)
+	events := make([]Event, 0)
 	for _, comp := range cal.Components {
 		if icalEvent, ok := comp.(*ical.VEvent); ok {
 			if icalEvent.GetProperty(ical.ComponentPropertyDtStart) != nil && icalEvent.GetProperty(ical.ComponentPropertyDtEnd) != nil {
@@ -103,7 +110,7 @@ func extractIcalEvents(label string, cal *ical.Calendar) ([]event, error) {
 						if titleOb != nil {
 							title = titleOb.Value
 						}
-						event := event{
+						event := Event{
 							Title: title,
 							Start: start,
 							End:   end,
@@ -118,10 +125,10 @@ func extractIcalEvents(label string, cal *ical.Calendar) ([]event, error) {
 	return events, nil
 }
 
-func extractRssEvents(label string, feed *gofeed.Feed) ([]event, error) {
+func extractRssEvents(label string, feed *gofeed.Feed) ([]Event, error) {
 	now := time.Now()
 	plus60Days := now.Add(time.Hour * 24 * 60)
-	events := make([]event, 0)
+	events := make([]Event, 0)
 	for _, item := range feed.Items {
 		//Mon, 30 Sep 2024 23:59:59 -0400
 		publishedParsed, err := time.Parse("Mon, 02 Jan 2006 15:04:05 -0700", item.Published)
@@ -131,7 +138,7 @@ func extractRssEvents(label string, feed *gofeed.Feed) ([]event, error) {
 		}
 		if publishedParsed.After(now) && publishedParsed.Before(plus60Days) {
 			realdate := time.Date(publishedParsed.Year(), publishedParsed.Month(), publishedParsed.Day(), 0, 0, 0, 0, publishedParsed.Location())
-			event := event{
+			event := Event{
 				Title: item.Title,
 				Start: realdate,
 				End:   realdate,
@@ -141,4 +148,49 @@ func extractRssEvents(label string, feed *gofeed.Feed) ([]event, error) {
 		}
 	}
 	return events, nil
+}
+
+func (i *ICal) StateForPrompt() *string {
+	if len(i.Events) == 0 {
+		return nil
+	}
+
+	horizon := time.Now().Add(time.Hour * 72)
+
+	calendarToEvents := make(map[string][]Event)
+
+	for _, event := range i.Events {
+		if event.Start.Before(horizon) {
+			array, ok := calendarToEvents[event.Label]
+			if !ok {
+				array = make([]Event, 0, 1)
+			}
+			calendarToEvents[event.Label] = append(array, event)
+		}
+	}
+
+	if len(calendarToEvents) == 0 {
+		return nil
+	}
+
+	var calendarSummary strings.Builder
+
+	calendarSummary.WriteString("Calendar of Events:\n")
+
+	for label, events := range calendarToEvents {
+		calendarInfo, ok := i.configuration.URLs[label]
+		if !ok {
+			continue
+		}
+		calendarSummary.WriteString(fmt.Sprintf("- Calendar Name: %s\n", label))
+		calendarSummary.WriteString(fmt.Sprintf("- Calendar Description: %s\n", calendarInfo.Description))
+		calendarSummary.WriteString("- Events:\n")
+		for i, event := range events {
+			calendarSummary.WriteString(fmt.Sprintf("  %d: %s at %s\n", i+1, event.Title, event.Start.In(loc).String()))
+		}
+	}
+
+	str := calendarSummary.String()
+
+	return &str
 }

@@ -9,11 +9,11 @@ type Coordinate struct {
 
 type ServiceConfig interface {
 	Empty() bool
-	Service() Service
 }
 
 type Service interface {
 	Name() string
-	Info(c context.Context) (interface{}, error)
 	NeedsRefresh() bool
+	Refresh(context.Context) error
+	StateForPrompt() *string
 }

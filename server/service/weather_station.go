@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
-	"main/core"
 	"net/http"
 	"time"
 )
@@ -17,17 +17,18 @@ func (c weatherStationConfiguration) Empty() bool {
 	return c.Upstream == ""
 }
 
-func (c weatherStationConfiguration) Service() core.Service {
-	return &weatherStation{
+func (c weatherStationConfiguration) Service() *WeatherStation {
+	return &WeatherStation{
 		configuration: c,
 	}
 }
 
-type weatherStation struct {
-	configuration weatherStationConfiguration
+type WeatherStation struct {
+	configuration         weatherStationConfiguration
+	WeatherStatonResponse *WeatherStatonResponse
 }
 
-type weatherStatonResponse struct {
+type WeatherStatonResponse struct {
 	Timestamp        time.Time `json:"timestamp"`
 	AvgWindSpeed     float64   `json:"anemometerAverage"`
 	MinWindSpeed     float64   `json:"anemometerMin"`
@@ -40,37 +41,59 @@ type weatherStatonResponse struct {
 }
 
 type weatherStationResponseBody struct {
-	Items []weatherStatonResponse `json:"items"`
+	Items []WeatherStatonResponse `json:"items"`
 }
 
-func (w *weatherStation) Name() string {
+func (w *WeatherStation) Name() string {
 	return "weatherstation"
 }
 
-func (w *weatherStation) Info(c context.Context) (interface{}, error) {
+func (w *WeatherStation) Refresh(c context.Context) error {
 	res, err := http.Get(w.configuration.Upstream)
 	if err != nil {
-		return weatherStatonResponse{}, err
+		return err
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return weatherStatonResponse{}, err
+		return err
 	}
 
 	var info weatherStationResponseBody
 	err = json.Unmarshal(body, &info)
 	if err != nil {
-		return weatherStatonResponse{}, err
+		return err
 	}
 
 	if len(info.Items) == 0 {
-		return weatherStatonResponse{}, nil
+		return nil
 	}
 
-	return info.Items[len(info.Items)-1], nil
+	w.WeatherStatonResponse = &info.Items[len(info.Items)-1]
+
+	return nil
 }
 
-func (w *weatherStation) NeedsRefresh() bool {
+func (w *WeatherStation) NeedsRefresh() bool {
 	return true
+}
+
+func (w *WeatherStation) StateForPrompt() *string {
+	if w.WeatherStatonResponse == nil {
+		return nil
+	}
+
+	str := fmt.Sprintf(`Household Weather Station Reading:
+- Temperature: %0.2f degrees Fahrenheit
+- Wind Speed %0.2f MPH
+- Wind Direction (Degrees): %0.2f
+- Relative Humidity: %0.2f%%
+- Atmospheric Pressure: %0.2f inHg`,
+		w.WeatherStatonResponse.Temperature,
+		w.WeatherStatonResponse.AvgWindSpeed,
+		w.WeatherStatonResponse.VaneDirection,
+		w.WeatherStatonResponse.RelativeHumidity,
+		w.WeatherStatonResponse.Pressure,
+	)
+	return &str
 }

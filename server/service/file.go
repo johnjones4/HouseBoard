@@ -2,35 +2,38 @@ package service
 
 import (
 	"context"
-	"main/core"
 )
 
-type fileConfiguration struct {
+type FileConfiguration struct {
 	Files []string `json:"files"`
 }
 
-func (c fileConfiguration) Empty() bool {
+func (c FileConfiguration) Empty() bool {
 	return len(c.Files) == 0
 }
 
-func (c fileConfiguration) Service() core.Service {
-	return &file{
-		fileConfiguration: c,
+func (c FileConfiguration) Service() *Files {
+	return &Files{
+		Files: c.Files,
 	}
 }
 
-type file struct {
-	fileConfiguration
+type Files struct {
+	Files []string
 }
 
-func (f *file) Name() string {
+func (f *Files) Name() string {
 	return "file"
 }
 
-func (f *file) Info(c context.Context) (interface{}, error) {
-	return f.fileConfiguration, nil
+func (f *Files) Refresh(c context.Context) error {
+	return nil
 }
 
-func (f *file) NeedsRefresh() bool {
+func (f *Files) NeedsRefresh() bool {
 	return false
+}
+
+func (f *Files) StateForPrompt() *string {
+	return nil
 }

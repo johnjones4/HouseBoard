@@ -15,7 +15,7 @@ container:
 ui:
 	cd frontend && npm install
 	cd frontend && npm run build
-	tar zcvf ui.tar.gz ./frontend/build
+	tar zcvf ui.tar.gz ./frontend/dist
 	git tag ${VERSION}
 	git push origin ${VERSION}
 	gh release create ${VERSION} ui.tar.gz --generate-notes

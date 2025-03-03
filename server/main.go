@@ -1,25 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"log/slog"
 	"main/api"
-	"main/core"
 	"main/service"
 	"net/http"
 	"os"
-
-	"go.uber.org/zap"
 )
 
 func main() {
-	config := zap.NewDevelopmentConfig()
-	l, err := config.Build()
-	if err != nil {
-		panic(err)
-	}
-
-	defer l.Sync()
-	log := l.Sugar()
+	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	configBytes, err := os.ReadFile(os.Getenv("CONFIG_FILE"))
 	if err != nil {
@@ -32,14 +24,16 @@ func main() {
 		panic(err)
 	}
 
-	services := make([]core.Service, 0)
-	for _, config := range cfg.Configurations() {
-		if !config.Empty() {
-			services = append(services, config.Service())
-		}
-	}
+	services := cfg.Services()
 
-	router := api.New(services, log)
-	err = http.ListenAndServe(os.Getenv("HTTP_HOST"), router)
-	panic(err)
+	ctx, cancel := context.WithCancel(context.Background())
+	go services.Start(ctx, log)
+
+	r := api.New(log, services)
+	err = http.ListenAndServe(os.Getenv("HTTP_HOST"), r)
+	if err != nil {
+		slog.Error("error listening", slog.Any("error", err))
+	}
+	cancel()
+
 }

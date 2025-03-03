@@ -7,27 +7,28 @@ import (
 	"main/core"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
-type owmResponse struct {
-	List []owmResponseItem `json:"list"`
+type OwmResponse struct {
+	List []OwmResponseItem `json:"list"`
 }
 
-type owmResponseItem struct {
+type OwmResponseItem struct {
 	Dt         int64        `json:"dt"`
-	Main       owmMain      `json:"main"`
-	Weather    []owmWeather `json:"weather"`
-	Clouds     owmClouds    `json:"clouds"`
-	Wind       owmWind      `json:"wind"`
+	Main       OwmMain      `json:"main"`
+	Weather    []OwmWeather `json:"weather"`
+	Clouds     OwmClouds    `json:"clouds"`
+	Wind       OwmWind      `json:"wind"`
 	Visibility int          `json:"visibility"`
 	Pop        float64      `json:"pop"`
-	Sys        owmSys       `json:"sys"`
+	Sys        OwmSys       `json:"sys"`
 	DtTxt      string       `json:"dt_txt"`
 }
 
 // Main represents the main temperature details.
-type owmMain struct {
+type OwmMain struct {
 	Temp      float64 `json:"temp"`
 	FeelsLike float64 `json:"feels_like"`
 	TempMin   float64 `json:"temp_min"`
@@ -40,7 +41,7 @@ type owmMain struct {
 }
 
 // Weather represents the weather condition details.
-type owmWeather struct {
+type OwmWeather struct {
 	ID          int    `json:"id"`
 	Main        string `json:"main"`
 	Description string `json:"description"`
@@ -48,19 +49,19 @@ type owmWeather struct {
 }
 
 // Clouds represents the cloud coverage details.
-type owmClouds struct {
+type OwmClouds struct {
 	All int `json:"all"`
 }
 
 // Wind represents the wind details.
-type owmWind struct {
+type OwmWind struct {
 	Speed float64 `json:"speed"`
 	Deg   int     `json:"deg"`
 	Gust  float64 `json:"gust"`
 }
 
 // Sys represents the system details.
-type owmSys struct {
+type OwmSys struct {
 	Pod string `json:"pod"`
 }
 
@@ -73,44 +74,81 @@ func (c owmConfiguration) Empty() bool {
 	return c.Location.Latitude == 0 && c.Location.Longitude == 0
 }
 
-func (c owmConfiguration) Service() core.Service {
-	return &openWeatherMap{
+func (c owmConfiguration) Service() *OpenWeatherMap {
+	return &OpenWeatherMap{
 		owmConfiguration: c,
 	}
 }
 
 const pullInterval = time.Hour
 
-type openWeatherMap struct {
+type OpenWeatherMap struct {
 	owmConfiguration
-	lastPull time.Time
+	lastPull    time.Time
+	OwmResponse *OwmResponse
 }
 
-func (f *openWeatherMap) Name() string {
+func (f *OpenWeatherMap) Name() string {
 	return "openWeatherMap"
 }
 
-func (f *openWeatherMap) Info(c context.Context) (interface{}, error) {
+func (f *OpenWeatherMap) Refresh(c context.Context) error {
 	qs := url.Values{
 		"lat":   []string{fmt.Sprint(f.Location.Latitude)},
 		"lon":   []string{fmt.Sprint(f.Location.Longitude)},
 		"appid": []string{f.ApiKey},
 		"units": []string{"imperial"},
 	}
-	res, err := http.Get("https://pro.openweathermap.org/data/2.5/forecast?" + qs.Encode())
+	url := "https://pro.openweathermap.org/data/2.5/forecast?" + qs.Encode()
+	res, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var body owmResponse
+	var body OwmResponse
 	err = json.NewDecoder(res.Body).Decode(&body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return body, nil
+	f.OwmResponse = &body
+
+	return nil
 }
 
-func (f *openWeatherMap) NeedsRefresh() bool {
+func (f *OpenWeatherMap) NeedsRefresh() bool {
 	return f.lastPull.Add(pullInterval).Before(time.Now())
+}
+
+func (f *OpenWeatherMap) StateForPrompt() *string {
+	if f.OwmResponse == nil {
+		return nil
+	}
+
+	var summary strings.Builder
+
+	summary.WriteString("Weather Forecast:\n")
+
+	for _, item := range f.OwmResponse.List {
+		summary.WriteString(fmt.Sprintf(`%s:
+- Temperature: %0.2f degrees Fahrenheit
+- Feels Like Temp: %0.2f degrees Fahrenheit
+- Wind: %0.2f MPH
+- Change of Precipitation: %0.2f%%
+- Pressure: %d inHg
+- Humidity: %d%%`,
+			time.Unix(item.Dt, 0).String(),
+			item.Main.Temp,
+			item.Main.FeelsLike,
+			item.Wind.Speed,
+			item.Pop*100,
+			item.Main.Pressure,
+			item.Main.Humidity,
+		))
+		summary.WriteString("\n")
+	}
+
+	str := summary.String()
+
+	return &str
 }

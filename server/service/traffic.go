@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
-	"main/core"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -19,7 +20,7 @@ type TrafficDestination struct {
 	EstimatedDuration int    `json:"estimatedDuration"`
 }
 
-type Traffic struct {
+type TrafficResp struct {
 	Destinations []TrafficDestination `json:"destinations"`
 }
 
@@ -54,25 +55,26 @@ func (c trafficConfiguration) Empty() bool {
 	return c.Origin == "" && len(c.Destinations) == 0
 }
 
-func (c trafficConfiguration) Service() core.Service {
-	return &traffic{
+func (c trafficConfiguration) Service() *Traffic {
+	return &Traffic{
 		configuration: c,
 		delay:         time.Second * time.Duration((60*60*24*31)/(maxMonthlyQueries/len(c.Destinations))),
 	}
 }
 
-type traffic struct {
+type Traffic struct {
 	configuration trafficConfiguration
 	lastLoad      time.Time
 	delay         time.Duration
+	TrafficResp   *TrafficResp
 }
 
-func (t *traffic) Name() string {
+func (t *Traffic) Name() string {
 	return "traffic"
 }
 
-func (t *traffic) Info(c context.Context) (interface{}, error) {
-	tr := Traffic{
+func (t *Traffic) Refresh(c context.Context) error {
+	tr := TrafficResp{
 		Destinations: make([]TrafficDestination, len(t.configuration.Destinations)),
 	}
 	for i, destination := range t.configuration.Destinations {
@@ -83,22 +85,22 @@ func (t *traffic) Info(c context.Context) (interface{}, error) {
 
 		res, err := http.Get("https://maps.googleapis.com/maps/api/directions/json?" + params.Encode())
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		var responseBody trafficResponse
 		err = json.Unmarshal(body, &responseBody)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		if len(responseBody.Routes) == 0 || len(responseBody.Routes[0].Legs) == 0 {
-			return nil, errors.New("bad response from directions service")
+			return errors.New("bad response from directions service")
 		}
 
 		tr.Destinations[i] = TrafficDestination{
@@ -108,9 +110,28 @@ func (t *traffic) Info(c context.Context) (interface{}, error) {
 		}
 	}
 	t.lastLoad = time.Now()
-	return tr, nil
+	t.TrafficResp = &tr
+	return nil
 }
 
-func (t *traffic) NeedsRefresh() bool {
+func (t *Traffic) NeedsRefresh() bool {
 	return time.Now().After(t.lastLoad.Add(t.delay))
+}
+
+func (t *Traffic) StateForPrompt() *string {
+	if t.TrafficResp == nil {
+		return nil
+	}
+
+	var summary strings.Builder
+
+	summary.WriteString("Traffic Conditions:\n")
+
+	for _, item := range t.TrafficResp.Destinations {
+		summary.WriteString(fmt.Sprintf("- %s Travel Time: %s (Expected: %s)\n", item.Destination, (time.Duration(item.EstimatedDuration) * time.Second).String(), (time.Duration(item.ExpectedDuration) * time.Second).String()))
+	}
+
+	str := summary.String()
+
+	return &str
 }

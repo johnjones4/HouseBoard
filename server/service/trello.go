@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"main/core"
 	"net/http"
 	"net/url"
 )
@@ -19,49 +18,51 @@ func (c trelloConfiguration) Empty() bool {
 	return c.APIKey == "" && c.Token == "" && len(c.Lists) == 0
 }
 
-func (c trelloConfiguration) Service() core.Service {
-	return &trello{c}
+func (c trelloConfiguration) Service() *Trello {
+	return &Trello{c, nil}
 }
 
-type trello struct {
+type Trello struct {
 	configuration trelloConfiguration
+	List          []List
 }
 
-type card struct {
+type Card struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 
-type list struct {
-	Cards []card `json:"cards"`
+type List struct {
+	Cards []Card `json:"cards"`
 	Name  string `json:"name"`
 }
 
-func (t *trello) Name() string {
+func (t *Trello) Name() string {
 	return "trello"
 }
 
-func (t *trello) Info(c context.Context) (interface{}, error) {
-	resp := make([]list, len(t.configuration.Lists))
+func (t *Trello) Refresh(c context.Context) error {
+	resp := make([]List, len(t.configuration.Lists))
 	for i, id := range t.configuration.Lists {
 		list, err := t.getList(id)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		cards, err := t.getCards(id)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		list.Cards = cards
 
 		resp[i] = list
 	}
-	return resp, nil
+	t.List = resp
+	return nil
 }
 
-func (t *trello) getList(id string) (list, error) {
+func (t *Trello) getList(id string) (List, error) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   "api.trello.com",
@@ -74,24 +75,24 @@ func (t *trello) getList(id string) (list, error) {
 
 	res, err := http.Get(u.String())
 	if err != nil {
-		return list{}, err
+		return List{}, err
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return list{}, err
+		return List{}, err
 	}
 
-	var l list
+	var l List
 	err = json.Unmarshal(body, &l)
 	if err != nil {
-		return list{}, err
+		return List{}, err
 	}
 
 	return l, nil
 }
 
-func (t *trello) getCards(id string) ([]card, error) {
+func (t *Trello) getCards(id string) ([]Card, error) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   "api.trello.com",
@@ -112,7 +113,7 @@ func (t *trello) getCards(id string) ([]card, error) {
 		return nil, err
 	}
 
-	var cardsResp []card
+	var cardsResp []Card
 	err = json.Unmarshal(body, &cardsResp)
 	if err != nil {
 		return nil, err
@@ -121,6 +122,10 @@ func (t *trello) getCards(id string) ([]card, error) {
 	return cardsResp, nil
 }
 
-func (t *trello) NeedsRefresh() bool {
+func (t *Trello) NeedsRefresh() bool {
 	return true
+}
+
+func (t *Trello) StateForPrompt() *string {
+	return nil
 }
