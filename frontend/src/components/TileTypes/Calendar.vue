@@ -78,7 +78,6 @@ const calendar = computed((): CalendarItem[] => {
         const bWeight = b.start === b.end ? Number.MAX_SAFE_INTEGER : b.parsedStart.getTime();
         return aWeight - bWeight;
       });
-      events = events.filter((e, i) => e.start === e.end ? i < 3 : true);
       array.push({
         events,
         date,
@@ -104,6 +103,7 @@ const eventOccursOnDay = (event: ParsedEvent, day: Date): boolean => {
 
 .tile.calendar .tile-body {
   display: flex;
+  font-size: 12px;
 }
 
 .tile.calendar .calendar-calendar {
@@ -122,6 +122,7 @@ const eventOccursOnDay = (event: ParsedEvent, day: Date): boolean => {
   padding: var(--thin-padding);
   border-left: solid 1px var(--color-text-light);
   border-top: solid 1px var(--color-text-light);
+  overflow: hidden;
 }
 
 .tile.calendar .calendar-item:nth-child(7n) {

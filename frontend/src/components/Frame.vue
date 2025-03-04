@@ -45,6 +45,24 @@
         />
       </template>
     </div>
+    <div v-if="infoStore && infoStore.info && infoStore.info.weatherStation" class="frame-footer">
+      <div class="frame-footer-prop">
+        <div class="frame-footer-prop-value" ref="dateTimeEl">
+          {{ new Date().toLocaleString() }}
+        </div>
+        <div class="frame-footer-prop-label">
+          Date/Time
+        </div>
+      </div>
+      <div class="frame-footer-prop">
+        <div class="frame-footer-prop-value">
+          {{ infoStore.info.weatherStation.temperature.toFixed(2) }}&deg;
+        </div>
+        <div class="frame-footer-prop-label">
+          Temperature
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -61,8 +79,23 @@ import Trello from './TileTypes/Trello.vue';
 import WeatherStation from './TileTypes/WeatherStation.vue';
 import type { FrameProps } from './FrameProps';
 import Agenda from './TileTypes/Agenda.vue';
+import { useInfoStore } from '../stores/info';
+import { ref } from 'vue';
 
 const props = defineProps<FrameProps>();
+
+const dateTimeEl = ref<null|HTMLDivElement>(null);
+
+const infoStore = useInfoStore();
+
+const tick = () => {
+  if (dateTimeEl.value) {
+    dateTimeEl.value.textContent = new Date().toLocaleString();
+  }
+  requestAnimationFrame(tick);
+}
+
+requestAnimationFrame(tick);
 
 </script>
 
@@ -91,6 +124,40 @@ const props = defineProps<FrameProps>();
   grid-gap: var(--default-padding);
   padding: var(--default-padding);
   border: solid 1px var(--color-text-light);
+  overflow: hidden;
+}
+
+.frame-footer {
+  margin-top: var(--thin-padding);
+  background-color: var(--color-text);
+  color: var(--color-background);
+  display: flex;
+  flex-direction: row;
+  padding: var(--thin-padding);
+  font-size: 1.5;
+}
+
+.frame-footer-prop {
+  margin-left: var(--default-padding);
+  padding-left: var(--default-padding);
+  border-left: dotted 1px var(--color-background);
+}
+
+.frame-footer-prop:first-child {
+  margin-left: var(--thin-padding);
+  border: none;
+  padding: 0;
+}
+
+.frame-footer-prop-value {
+  font-size: 2em;
+  font-optical-sizing: auto;
+  font-family: "Doto", monospace;
+  font-weight: bold;
+}
+
+.frame-footer-prop-label {
+  font-weight: 400;
 }
 
 </style>

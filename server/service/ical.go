@@ -155,12 +155,13 @@ func (i *ICal) StateForPrompt() *string {
 		return nil
 	}
 
-	horizon := time.Now().Add(time.Hour * 72)
+	now := time.Now()
+	horizon := now.Add(time.Hour * 72)
 
 	calendarToEvents := make(map[string][]Event)
 
 	for _, event := range i.Events {
-		if event.Start.Before(horizon) {
+		if event.Start.Before(horizon) && event.Start.After(now) {
 			array, ok := calendarToEvents[event.Label]
 			if !ok {
 				array = make([]Event, 0, 1)
