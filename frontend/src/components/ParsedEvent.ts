@@ -14,3 +14,11 @@ export const mapToParsedEvents = (events: Event[]): ParsedEvent[] => {
     parsedEnd: new Date(Date.parse(e.end)),
   }));
 }
+
+export const sortEvents = (events: ParsedEvent[]): ParsedEvent[] => {
+  return events.sort((a: ParsedEvent, b: ParsedEvent): number => {
+    const aWeight = a.start === a.end ? Number.MAX_SAFE_INTEGER : a.parsedStart.getTime();
+    const bWeight = b.start === b.end ? Number.MAX_SAFE_INTEGER : b.parsedStart.getTime();
+    return aWeight - bWeight;
+  });
+}

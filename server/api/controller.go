@@ -39,17 +39,15 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 
 	if len(c.services.Files.Files) > 0 {
 		resp.Files = &Files{
-			Files: make([]string, len(c.services.Files.Files)),
-		}
-		for i, file := range c.services.Files.Files {
-			resp.Files.Files[i] = file
+			Files: c.services.Files.Files,
 		}
 	}
 
 	if c.services.NOAA.Weather != nil {
 		resp.Forecast = &Forecast{
-			RadarURL: c.services.NOAA.Weather.RadarURL,
-			Alerts:   make([]string, len(c.services.NOAA.Weather.Alerts)),
+			LocalRadarURL:    c.services.NOAA.Weather.LocalRadarURL,
+			NationalRadarURL: c.services.NOAA.Weather.NationalRadarURL,
+			Alerts:           make([]string, len(c.services.NOAA.Weather.Alerts)),
 		}
 		for i, alert := range c.services.NOAA.Weather.Alerts {
 			resp.Forecast.Alerts[i] = alert.Headline
@@ -116,6 +114,22 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 					Name: card.Name,
 				}
 			}
+		}
+	}
+
+	if c.services.SunriseSunset != nil {
+		resp.SunriseSunset = &SunriseSunset{
+			Sunrise: c.services.SunriseSunset.Rise,
+			Sunset:  c.services.SunriseSunset.Set,
+		}
+	}
+
+	if c.services.Trivia != nil && c.services.Trivia.Current != nil && c.services.Trivia.Previous != nil {
+		resp.Trivia = &Trivia{
+			Question:         c.services.Trivia.Current.Question,
+			Choices:          c.services.Trivia.Current.Choices,
+			PreviousQuestion: c.services.Trivia.Previous.Question,
+			PreviousAnswer:   c.services.Trivia.Previous.Choices[c.services.Trivia.Previous.Answer],
 		}
 	}
 

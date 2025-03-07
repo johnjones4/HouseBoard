@@ -8,6 +8,8 @@ type Configuration struct {
 	Trello         trelloConfiguration         `json:"trello"`
 	Files          FileConfiguration           `json:"file"`
 	OpenWeatherMap OpenWeatherMap              `json:"openWeatherMap"`
+	SunriseSunset  SunriseSunsetConfiguration  `json:"sunriseSunset"`
+	Trivia         TriviaConfiguration         `json:"trivia"`
 }
 
 func (c Configuration) Services() *Services {
@@ -33,5 +35,12 @@ func (c Configuration) Services() *Services {
 	if !c.WeatherStation.Empty() {
 		svc.WeatherStation = c.WeatherStation.Service()
 	}
+	if !c.SunriseSunset.Empty() {
+		svc.SunriseSunset = c.SunriseSunset.Service()
+	}
+	if !c.Trivia.Empty() {
+		svc.Trivia = c.Trivia.Service()
+	}
+
 	return svc
 }

@@ -28,6 +28,10 @@ components:
           $ref: '#/components/schemas/Traffic'
         summary: 
           $ref: '#/components/schemas/Summary'
+        sunriseSunset:
+          $ref: '#/components/schemas/SunriseSunset'
+        trivia:
+          $ref: '#/components/schemas/Trivia'
     Summary:
       required:
         - summary
@@ -73,7 +77,10 @@ components:
     Forecast:
       type: object
       properties:
-        radarURL:
+        nationalRadarURL:
+          type: string
+          format: uri
+        localRadarURL:
           type: string
           format: uri
         forecast:
@@ -85,9 +92,10 @@ components:
           items:
             type: string
       required:
-        - radarURL
+        - nationalRadarURL
         - forecast
         - alerts
+        - localRadarURL
 
     ForecastPeriod:
       type: object
@@ -231,3 +239,29 @@ components:
         - relativeHumidity
         - pressure
         - vaneDirection
+    SunriseSunset:
+      properties:
+        sunrise:
+          type: string
+          format: date-time
+        sunset:
+          type: string
+          format: date-time
+
+    Trivia:
+      properties:
+        question:
+          type: string
+        choices:
+          type: array
+          items: 
+            type: string
+        previousQuestion: 
+          type: string
+        previousAnswer:
+          type: string
+      required:
+        - question
+        - choices
+        - previousQuestion
+        - previousAnswer

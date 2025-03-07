@@ -36,7 +36,7 @@ import { computed } from 'vue';
 import { useInfoStore } from '../../stores/info';
 import type { Position } from '../Position';
 import Tile from '../Tile.vue';
-import { mapToParsedEvents, type ParsedEvent } from '../ParsedEvent';
+import { mapToParsedEvents, sortEvents, type ParsedEvent } from '../ParsedEvent';
 import EventsList from '../Misc/EventsList.vue';
 
 
@@ -72,12 +72,7 @@ const calendar = computed((): CalendarItem[] => {
     const parsedEvents = mapToParsedEvents(infoStore.info.events.events);
     for (let col = curDay.getDay(); col < 7; col++) {      
       const date = curDay;
-      let events = parsedEvents.filter(event => eventOccursOnDay(event, date));
-      events = events.sort((a: ParsedEvent, b: ParsedEvent): number => {
-        const aWeight = a.start === a.end ? Number.MAX_SAFE_INTEGER : a.parsedStart.getTime();
-        const bWeight = b.start === b.end ? Number.MAX_SAFE_INTEGER : b.parsedStart.getTime();
-        return aWeight - bWeight;
-      });
+      let events = sortEvents(parsedEvents.filter(event => eventOccursOnDay(event, date)));
       array.push({
         events,
         date,

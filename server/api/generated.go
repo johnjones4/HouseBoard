@@ -37,9 +37,10 @@ type Files struct {
 
 // Forecast defines model for Forecast.
 type Forecast struct {
-	Alerts   []string         `json:"alerts"`
-	Forecast []ForecastPeriod `json:"forecast"`
-	RadarURL string           `json:"radarURL"`
+	Alerts           []string         `json:"alerts"`
+	Forecast         []ForecastPeriod `json:"forecast"`
+	LocalRadarURL    string           `json:"localRadarURL"`
+	NationalRadarURL string           `json:"nationalRadarURL"`
 }
 
 // ForecastPeriod defines model for ForecastPeriod.
@@ -59,8 +60,10 @@ type Info struct {
 	Files          *Files          `json:"files,omitempty"`
 	Forecast       *Forecast       `json:"forecast,omitempty"`
 	Summary        *Summary        `json:"summary,omitempty"`
+	SunriseSunset  *SunriseSunset  `json:"sunriseSunset,omitempty"`
 	Traffic        *Traffic        `json:"traffic,omitempty"`
 	Trello         *Trello         `json:"trello,omitempty"`
+	Trivia         *Trivia         `json:"trivia,omitempty"`
 	WeatherStation *WeatherStation `json:"weatherStation,omitempty"`
 }
 
@@ -73,6 +76,12 @@ type List struct {
 // Summary defines model for Summary.
 type Summary struct {
 	Summary string `json:"summary"`
+}
+
+// SunriseSunset defines model for SunriseSunset.
+type SunriseSunset struct {
+	Sunrise *time.Time `json:"sunrise,omitempty"`
+	Sunset  *time.Time `json:"sunset,omitempty"`
 }
 
 // Traffic defines model for Traffic.
@@ -94,6 +103,14 @@ type TrafficDestination struct {
 // Trello defines model for Trello.
 type Trello struct {
 	List []List `json:"list"`
+}
+
+// Trivia defines model for Trivia.
+type Trivia struct {
+	Choices          []string `json:"choices"`
+	PreviousAnswer   string   `json:"previousAnswer"`
+	PreviousQuestion string   `json:"previousQuestion"`
+	Question         string   `json:"question"`
 }
 
 // WeatherStation defines model for WeatherStation.

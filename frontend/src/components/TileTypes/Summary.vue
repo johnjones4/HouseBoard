@@ -25,6 +25,9 @@ const props = defineProps<{
 .tile.summary .tile-body {
   font-weight: 300;
   font-size: 60px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 </style>

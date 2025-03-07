@@ -10,6 +10,10 @@
     "swagger": "npx openapi-typescript ../server/swagger.yml -o ./src/stores/swagger.d.ts"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "chart.js": "^4.4.8",
     "openapi-fetch": "^0.13.4",
     "pinia": "^2.3.0",

@@ -16,8 +16,14 @@
           :position="tile.position"
         />
         <Radar 
-          v-else-if="tile.tileType === TileType.radar" 
+          v-else-if="tile.tileType === TileType.localRadar" 
           :position="tile.position"
+          :radar-type="RadarType.local"
+        />
+        <Radar 
+          v-else-if="tile.tileType === TileType.nationalRadar" 
+          :position="tile.position"
+          :radar-type="RadarType.national"
         />
         <Trello 
           v-else-if="tile.tileType === TileType.trello" 
@@ -43,23 +49,22 @@
           v-else-if="tile.tileType === TileType.agenda"
           :position="tile.position"
         />
+        <Trivia
+          v-else-if="tile.tileType === TileType.trivia"
+          :position="tile.position"
+        />
       </template>
     </div>
     <div v-if="infoStore && infoStore.info && infoStore.info.weatherStation" class="frame-footer">
-      <div class="frame-footer-prop">
-        <div class="frame-footer-prop-value" ref="dateTimeEl">
-          {{ new Date().toLocaleString() }}
-        </div>
-        <div class="frame-footer-prop-label">
-          Date/Time
-        </div>
-      </div>
-      <div class="frame-footer-prop">
-        <div class="frame-footer-prop-value">
-          {{ infoStore.info.weatherStation.temperature.toFixed(2) }}&deg;
-        </div>
-        <div class="frame-footer-prop-label">
-          Temperature
+      <div v-for="item in footers" :key="item.label" class="frame-footer-prop">
+        <FontAwesomeIcon :icon="item.icon" size="3x" />
+        <div class="frame-footer-prop-info">
+          <div class="frame-footer-prop-value" :ref="(v) => setFooterItemRef(item, v as HTMLDivElement)">
+            {{ item.value }}
+          </div>
+          <div class="frame-footer-prop-label">
+            {{ item.label }}
+          </div>
         </div>
       </div>
     </div>
@@ -73,6 +78,7 @@ import Files from './TileTypes/Files.vue';
 import Clock from './TileTypes/Clock.vue';
 import Forecast from './TileTypes/Forecast.vue';
 import Radar from './TileTypes/Radar.vue';
+import { RadarType } from './RadarType';
 import Summary from './TileTypes/Summary.vue';
 import Traffic from './TileTypes/Traffic.vue';
 import Trello from './TileTypes/Trello.vue';
@@ -80,13 +86,60 @@ import WeatherStation from './TileTypes/WeatherStation.vue';
 import type { FrameProps } from './FrameProps';
 import Agenda from './TileTypes/Agenda.vue';
 import { useInfoStore } from '../stores/info';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faClock, faSun, faMoon } from '@fortawesome/free-regular-svg-icons'
+import { faTemperatureHalf } from '@fortawesome/free-solid-svg-icons'
+import { library, type IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import Trivia from './TileTypes/Trivia.vue';
+
+library.add(faClock, faTemperatureHalf, faSun, faMoon);
 
 const props = defineProps<FrameProps>();
 
 const dateTimeEl = ref<null|HTMLDivElement>(null);
 
 const infoStore = useInfoStore();
+
+interface FooterSummaryItem {
+  icon: IconDefinition;
+  label: string;
+  value: string;
+}
+
+const footers = computed((): FooterSummaryItem[] => {
+  if (!infoStore.info) {
+    return [];
+  }
+  return [
+    {
+      icon: faClock,
+      label: 'Date/Time',
+      value: new Date().toLocaleString(),
+    },
+    {
+      icon: faTemperatureHalf,
+      label: 'Temperature',
+      value: infoStore.info.weatherStation ? `${infoStore.info.weatherStation.temperature.toFixed(1)}°` : '',
+    },
+    {
+      icon: faSun,
+      label: 'Sunrise',
+      value: infoStore.info.sunriseSunset && infoStore.info.sunriseSunset.sunrise ? new Date(infoStore.info.sunriseSunset.sunrise).toLocaleTimeString() : '',
+    },
+    {
+      icon: faMoon,
+      label: 'Sunset',
+      value: infoStore.info.sunriseSunset && infoStore.info.sunriseSunset.sunset ? new Date(infoStore.info.sunriseSunset.sunset).toLocaleTimeString() : '',
+    },
+  ]
+});
+
+const setFooterItemRef = (item: FooterSummaryItem, r: HTMLDivElement) => {
+  if (item.label === 'Date/Time') {
+    dateTimeEl.value = r;
+  }
+}
 
 const tick = () => {
   if (dateTimeEl.value) {
@@ -141,6 +194,13 @@ requestAnimationFrame(tick);
   margin-left: var(--default-padding);
   padding-left: var(--default-padding);
   border-left: dotted 1px var(--color-background);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.frame-footer-prop-info {
+  margin-left: var(--thin-padding);
 }
 
 .frame-footer-prop:first-child {
@@ -150,7 +210,7 @@ requestAnimationFrame(tick);
 }
 
 .frame-footer-prop-value {
-  font-size: 2em;
+  font-size: 2.5em;
   font-optical-sizing: auto;
   font-family: "Doto", monospace;
   font-weight: bold;

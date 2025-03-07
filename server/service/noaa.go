@@ -13,9 +13,10 @@ import (
 )
 
 type Weather struct {
-	RadarURL string                              `json:"radarURL"`
-	Forecast []NoaaWeatherForecastPeriod         `json:"forecast"`
-	Alerts   []NoaaWeatherAlertFeatureProperties `json:"alerts"`
+	LocalRadarURL    string `json:"radarURL"`
+	NationalRadarURL string
+	Forecast         []NoaaWeatherForecastPeriod         `json:"forecast"`
+	Alerts           []NoaaWeatherAlertFeatureProperties `json:"alerts"`
 }
 
 type NoaaWeatherPointProperties struct {
@@ -111,8 +112,6 @@ func (f *NOAA) predictWeather(coord core.Coordinate) (Weather, error) {
 		return Weather{}, err
 	}
 
-	radarURL := fmt.Sprintf("https://radar.weather.gov/ridge/standard/%s_loop.gif?refreshed=%d", point.RadarStation, time.Now().Unix())
-
 	forecast, err := makeWeatherAPIForecastCall(point)
 	if err != nil {
 		return Weather{}, err
@@ -124,9 +123,10 @@ func (f *NOAA) predictWeather(coord core.Coordinate) (Weather, error) {
 	}
 
 	return Weather{
-		RadarURL: radarURL,
-		Forecast: forecast,
-		Alerts:   alerts,
+		LocalRadarURL:    fmt.Sprintf("https://radar.weather.gov/ridge/standard/%s_loop.gif", point.RadarStation),
+		NationalRadarURL: "https://radar.weather.gov/ridge/standard/CONUS-LARGE_loop.gif",
+		Forecast:         forecast,
+		Alerts:           alerts,
 	}, nil
 }
 

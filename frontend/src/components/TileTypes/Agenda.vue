@@ -11,7 +11,7 @@ import { useInfoStore } from '../../stores/info';
 import type { Position } from '../Position';
 import Tile from '../Tile.vue';
 import EventsList from '../Misc/EventsList.vue';
-import { mapToParsedEvents, type ParsedEvent } from '../ParsedEvent';
+import { mapToParsedEvents, sortEvents, type ParsedEvent } from '../ParsedEvent';
 
 const infoStore = useInfoStore();
 
@@ -24,8 +24,8 @@ const agenda = computed((): ParsedEvent[] => {
     return [];
   }
   const now = new Date();
-  return mapToParsedEvents(infoStore.info.events.events)
-    .filter(e => e.parsedStart.getDate() === now.getDate() && e.parsedStart.getMonth() === now.getMonth() && e.parsedStart.getFullYear() === now.getFullYear());
+  return sortEvents(mapToParsedEvents(infoStore.info.events.events)
+    .filter(e => e.parsedStart.getDate() === now.getDate() && e.parsedStart.getMonth() === now.getMonth() && e.parsedStart.getFullYear() === now.getFullYear()));
 })
 
 </script>

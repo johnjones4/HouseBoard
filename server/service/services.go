@@ -29,6 +29,8 @@ type Services struct {
 	Files          *Files
 	WeatherStation *WeatherStation
 	Lock           sync.RWMutex
+	SunriseSunset  *SunriseSunset
+	Trivia         *Trivia
 
 	summary string
 }
@@ -42,6 +44,8 @@ func (s *Services) All() []core.Service {
 		s.Trello,
 		s.Files,
 		s.WeatherStation,
+		s.SunriseSunset,
+		s.Trivia,
 	}
 }
 
@@ -69,7 +73,7 @@ func (s *Services) summarize(ctx context.Context, log *slog.Logger) {
 	var prompt strings.Builder
 	prompt.WriteString(promptStart)
 	prompt.WriteString("\n\n")
-	prompt.WriteString(fmt.Sprintf("Current Date: %s", time.Now().Format(time.ANSIC)))
+	prompt.WriteString(fmt.Sprintf("Current Date: %s", time.Now().In(loc).Format(time.ANSIC)))
 	prompt.WriteString("\n\n")
 	prompt.WriteString("Current Summary: ")
 	if s.summary == "" {

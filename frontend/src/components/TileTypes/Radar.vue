@@ -1,10 +1,10 @@
 <template>
   <Tile :position="props.position" name="radar">
     <div 
-      v-if="infoStore.info.forecast && infoStore.info.forecast.radarURL"
+      v-if="inforStore.info && inforStore.info.forecast"
       class="radar-display"
       :style="{
-        backgroundImage: `url(${infoStore.info.forecast.radarURL}?t=${(new Date().getTime() / 10000).toFixed(0)})`
+        backgroundImage: `url(${url}?t=${(new Date().getTime() / 10000).toFixed(0)})`
       }"
     ></div>
   </Tile>
@@ -12,15 +12,32 @@
 
 <script lang="ts" setup>
 
+import { computed } from 'vue';
 import { useInfoStore } from '../../stores/info';
 import type { Position } from '../Position';
 import Tile from '../Tile.vue';
+import { RadarType } from '../RadarType';
 
-const infoStore = useInfoStore();
+const inforStore = useInfoStore();
 
 const props = defineProps<{
   position: Position;
+  radarType: RadarType
 }>();
+
+const url = computed((): string => {
+  if (!inforStore.info || !inforStore.info.forecast) {
+    return '';
+  }
+  switch (props.radarType) {
+    case RadarType.local:
+      return inforStore.info.forecast.localRadarURL;
+    case RadarType.national:
+      return inforStore.info.forecast.nationalRadarURL;
+    default:
+      return ''
+  }
+})
 
 </script>
 

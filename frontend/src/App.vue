@@ -43,6 +43,20 @@ const tileSets = [
     ]
   },
   {
+    title: 'Trivia',
+    tiles: [
+      {
+        tileType: TileType.trivia,
+        position: {
+          row: 1,
+          col: 1,
+          width: 12,
+          height: 6,
+        },
+      },
+    ],
+  },
+  {
     title: 'Current Conditions',
     tiles: [
       {
@@ -50,16 +64,25 @@ const tileSets = [
         position: {
           row: 1,
           col: 1,
-          width: 8,
+          width: 4,
           height: 3,
         }
       },
       {
-        tileType: TileType.radar,
+        tileType: TileType.localRadar,
         position: {
           row: 1,
-          col: 9,
-          width: 4,
+          col: 5,
+          width: 3,
+          height: 3,
+        }
+      },
+      {
+        tileType: TileType.nationalRadar,
+        position: {
+          row: 1,
+          col: 8,
+          width: 5,
           height: 3,
         }
       },
@@ -101,7 +124,7 @@ const tileSets = [
 const currentIndex = ref(0);
 const nextChange = ref(0);
 const countdown = ref<null|HTMLDivElement>(null);
-const delay = 20000;
+const delay = 30000;
 
 const tick = () => {
   const now = new Date().getTime();

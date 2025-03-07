@@ -51,6 +51,8 @@ export interface components {
             weatherStation?: components["schemas"]["WeatherStation"];
             traffic?: components["schemas"]["Traffic"];
             summary?: components["schemas"]["Summary"];
+            sunriseSunset?: components["schemas"]["SunriseSunset"];
+            trivia?: components["schemas"]["Trivia"];
         };
         Summary: {
             summary: string;
@@ -71,7 +73,9 @@ export interface components {
         };
         Forecast: {
             /** Format: uri */
-            radarURL: string;
+            nationalRadarURL: string;
+            /** Format: uri */
+            localRadarURL: string;
             forecast: components["schemas"]["ForecastPeriod"][];
             alerts: string[];
         };
@@ -158,6 +162,18 @@ export interface components {
              * @description Wind direction in degrees from the vane.
              */
             vaneDirection: number;
+        };
+        SunriseSunset: {
+            /** Format: date-time */
+            sunrise?: string;
+            /** Format: date-time */
+            sunset?: string;
+        };
+        Trivia: {
+            question: string;
+            choices: string[];
+            previousQuestion: string;
+            previousAnswer: string;
         };
     };
     responses: never;

@@ -6,7 +6,7 @@
       :key="file"
       class="file-display"
       :style="{
-        backgroundImage: `url(${file}?t=${(new Date().getTime() / 10000).toFixed(0)})`
+        backgroundImage: `url(${file}?t=${(new Date().getTime() / 100000).toFixed(0)})`
       }"
     ></div>
   </Tile>
