@@ -71,7 +71,7 @@ func (i *ICal) Refresh(c context.Context) error {
 }
 
 func (i *ICal) NeedsRefresh() bool {
-	return true
+	return i != nil
 }
 
 func getCalendar(url string) (any, error) {
@@ -80,7 +80,7 @@ func getCalendar(url string) (any, error) {
 		return nil, err
 	}
 
-	if strings.Index(res.Header.Get("Content-type"), "application/rss") == 0 {
+	if strings.Index(res.Header.Get("Content-type"), "application/rss") == 0 || strings.Index(res.Header.Get("Content-type"), "text/xml") == 0 {
 		fp := gofeed.NewParser()
 		return fp.Parse(res.Body)
 	} else {
@@ -125,15 +125,26 @@ func extractIcalEvents(label string, cal *ical.Calendar) ([]Event, error) {
 	return events, nil
 }
 
+var rssDateFormats = []string{
+	"Mon, 02 Jan 2006 15:04:05 -0700",
+	"Mon, 02 Jan 2006 15:04:05 MST",
+}
+
 func extractRssEvents(label string, feed *gofeed.Feed) ([]Event, error) {
 	now := time.Now()
 	plus60Days := now.Add(time.Hour * 24 * 60)
 	events := make([]Event, 0)
 	for _, item := range feed.Items {
-		//Mon, 30 Sep 2024 23:59:59 -0400
-		publishedParsed, err := time.Parse("Mon, 02 Jan 2006 15:04:05 -0700", item.Published)
-		if err != nil {
-			log.Println(err)
+		var publishedParsed time.Time
+		for _, format := range rssDateFormats {
+			var err error
+			publishedParsed, err = time.Parse(format, item.Published)
+			if err == nil {
+				break
+			}
+		}
+		if publishedParsed.IsZero() {
+			log.Printf("cannot parse date: %s", item.Published)
 			continue
 		}
 		if publishedParsed.After(now) && publishedParsed.Before(plus60Days) {
@@ -151,6 +162,10 @@ func extractRssEvents(label string, feed *gofeed.Feed) ([]Event, error) {
 }
 
 func (i *ICal) StateForPrompt() *string {
+	if i == nil {
+		return nil
+	}
+
 	if len(i.Events) == 0 {
 		return nil
 	}

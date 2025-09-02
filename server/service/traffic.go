@@ -115,10 +115,17 @@ func (t *Traffic) Refresh(c context.Context) error {
 }
 
 func (t *Traffic) NeedsRefresh() bool {
+	if t == nil {
+		return false
+	}
 	return time.Now().After(t.lastLoad.Add(t.delay))
 }
 
 func (t *Traffic) StateForPrompt() *string {
+	if t == nil {
+		return nil
+	}
+
 	if t.TrafficResp == nil {
 		return nil
 	}

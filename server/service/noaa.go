@@ -103,7 +103,7 @@ func (f *NOAA) Refresh(c context.Context) error {
 }
 
 func (f *NOAA) NeedsRefresh() bool {
-	return true
+	return f != nil
 }
 
 func (f *NOAA) predictWeather(coord core.Coordinate) (Weather, error) {

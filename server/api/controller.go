@@ -23,7 +23,7 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	if len(c.services.ICal.Events) > 0 {
+	if c.services.ICal != nil && len(c.services.ICal.Events) > 0 {
 		resp.Events = &Events{
 			Events: make([]Event, len(c.services.ICal.Events)),
 		}
@@ -37,13 +37,13 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if len(c.services.Files.Files) > 0 {
+	if c.services.Files != nil && len(c.services.Files.Files) > 0 {
 		resp.Files = &Files{
 			Files: c.services.Files.Files,
 		}
 	}
 
-	if c.services.NOAA.Weather != nil {
+	if c.services.NOAA != nil && c.services.NOAA.Weather != nil {
 		resp.Forecast = &Forecast{
 			LocalRadarURL:    c.services.NOAA.Weather.LocalRadarURL,
 			NationalRadarURL: c.services.NOAA.Weather.NationalRadarURL,
@@ -54,7 +54,7 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if c.services.OpenWeatherMap.OwmResponse != nil {
+	if c.services.OpenWeatherMap != nil && c.services.OpenWeatherMap.OwmResponse != nil {
 		if resp.Forecast == nil {
 			resp.Forecast = &Forecast{}
 		}
@@ -72,7 +72,7 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if c.services.WeatherStation != nil {
+	if c.services.WeatherStation != nil && c.services.WeatherStation.WeatherStatonResponse != nil {
 		resp.WeatherStation = &WeatherStation{
 			AnemometerAverage: c.services.WeatherStation.WeatherStatonResponse.AvgWindSpeed,
 			AnemometerMin:     c.services.WeatherStation.WeatherStatonResponse.MinWindSpeed,
@@ -86,7 +86,7 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if c.services.Traffic.TrafficResp != nil {
+	if c.services.Traffic != nil && c.services.Traffic.TrafficResp != nil {
 		resp.Traffic = &Traffic{
 			Destinations: make([]TrafficDestination, len(c.services.Traffic.TrafficResp.Destinations)),
 		}
@@ -99,7 +99,7 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if len(c.services.Trello.List) > 0 {
+	if c.services.Trello != nil && len(c.services.Trello.List) > 0 {
 		resp.Trello = &Trello{
 			List: make([]List, len(c.services.Trello.List)),
 		}
@@ -126,10 +126,12 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 
 	if c.services.Trivia != nil && c.services.Trivia.Current != nil && c.services.Trivia.Previous != nil {
 		resp.Trivia = &Trivia{
-			Question:         c.services.Trivia.Current.Question,
-			Choices:          c.services.Trivia.Current.Choices,
-			PreviousQuestion: c.services.Trivia.Previous.Question,
-			PreviousAnswer:   c.services.Trivia.Previous.Choices[c.services.Trivia.Previous.Answer],
+			Question: c.services.Trivia.Current.Question,
+			Choices:  c.services.Trivia.Current.Choices,
+		}
+		if c.services.Trivia.Previous.Answer >= 0 && c.services.Trivia.Previous.Answer < len(c.services.Trivia.Previous.Choices) {
+			resp.Trivia.PreviousQuestion = c.services.Trivia.Previous.Question
+			resp.Trivia.PreviousAnswer = c.services.Trivia.Previous.Choices[c.services.Trivia.Previous.Answer]
 		}
 	}
 

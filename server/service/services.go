@@ -58,10 +58,10 @@ func (s *Services) refresh(ctx context.Context, log *slog.Logger) {
 	defer s.Lock.Unlock()
 	log.Info("refreshing services")
 	for _, service := range s.All() {
-		if service.NeedsRefresh() {
+		if service != nil && service.NeedsRefresh() {
 			err := service.Refresh(ctx)
 			if err != nil {
-				log.Error("error refreshing service", slog.Any("error", err))
+				log.Error("error refreshing service", slog.String("service", service.Name()), slog.Any("error", err))
 			}
 		}
 	}
@@ -84,10 +84,12 @@ func (s *Services) summarize(ctx context.Context, log *slog.Logger) {
 	prompt.WriteString("\n\n")
 	prompt.WriteString("Current State:")
 	for _, service := range s.All() {
-		state := service.StateForPrompt()
-		if state != nil {
-			prompt.WriteString("\n\n")
-			prompt.WriteString(*state)
+		if service != nil {
+			state := service.StateForPrompt()
+			if state != nil {
+				prompt.WriteString("\n\n")
+				prompt.WriteString(*state)
+			}
 		}
 	}
 

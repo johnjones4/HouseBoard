@@ -54,6 +54,9 @@ func (f *Trivia) Refresh(c context.Context) error {
 }
 
 func (f *Trivia) NeedsRefresh() bool {
+	if f == nil {
+		return false
+	}
 	now := time.Now()
 	return now.Format(time.DateOnly) != f.lastRefresh.Format(time.DateOnly)
 }

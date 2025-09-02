@@ -39,7 +39,6 @@ const props = defineProps<{
 
 .tile.trivia .tile-body {
   font-weight: 300;
-  font-size: 60px;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -62,11 +61,11 @@ const props = defineProps<{
 }
 
 .tile.trivia .trivia-current {
-  font-size: 60px;
+  font-size: 40px;
 }
 
 .tile.trivia .trivia-previous {
-  font-size: 30px;
+  font-size: 15px;
   margin-top: 1em;
 }
 

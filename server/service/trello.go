@@ -123,7 +123,7 @@ func (t *Trello) getCards(id string) ([]Card, error) {
 }
 
 func (t *Trello) NeedsRefresh() bool {
-	return true
+	return t != nil
 }
 
 func (t *Trello) StateForPrompt() *string {

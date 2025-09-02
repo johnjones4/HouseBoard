@@ -75,10 +75,14 @@ func (w *WeatherStation) Refresh(c context.Context) error {
 }
 
 func (w *WeatherStation) NeedsRefresh() bool {
-	return true
+	return w != nil
 }
 
 func (w *WeatherStation) StateForPrompt() *string {
+	if w == nil {
+		return nil
+	}
+
 	if w.WeatherStatonResponse == nil {
 		return nil
 	}

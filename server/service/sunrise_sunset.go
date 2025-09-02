@@ -47,7 +47,7 @@ func (f *SunriseSunset) Refresh(c context.Context) error {
 }
 
 func (f *SunriseSunset) NeedsRefresh() bool {
-	return true
+	return f != nil
 }
 
 func (f *SunriseSunset) StateForPrompt() *string {

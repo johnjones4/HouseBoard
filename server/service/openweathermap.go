@@ -117,10 +117,17 @@ func (f *OpenWeatherMap) Refresh(c context.Context) error {
 }
 
 func (f *OpenWeatherMap) NeedsRefresh() bool {
+	if f == nil {
+		return false
+	}
 	return f.lastPull.Add(pullInterval).Before(time.Now())
 }
 
 func (f *OpenWeatherMap) StateForPrompt() *string {
+	if f == nil {
+		return nil
+	}
+
 	if f.OwmResponse == nil {
 		return nil
 	}
