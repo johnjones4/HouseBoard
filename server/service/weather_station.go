@@ -25,22 +25,40 @@ func (c weatherStationConfiguration) Service() *WeatherStation {
 
 type WeatherStation struct {
 	configuration         weatherStationConfiguration
-	WeatherStatonResponse *WeatherStatonResponse
+	WeatherStatonResponse *WeatherReading
+	LastUpdated           *time.Time
 }
 
-type WeatherStatonResponse struct {
-	Timestamp     time.Time `json:"timestamp"`
-	WindSpeed     float64   `json:"windSpeed"`
-	VaneDirection float64   `json:"vaneDirection"`
-	Temperature   float64   `json:"temperature"`
-	Pressure      float64   `json:"pressure"`
-	Humidity      float64   `json:"humidity"`
-	Gas           float64   `json:"gas"`
-	Rainfall      float64   `json:"rainfall"`
+type weatherAverage struct {
+	Period        string         `json:"period"`
+	Start         time.Time      `json:"start"`
+	Averages      WeatherReading `json:"averages"`
+	RainfallTotal float64        `json:"rainfallTotal"`
 }
 
-type weatherStationResponseBody struct {
-	Items []WeatherStatonResponse `json:"items"`
+type weatherResponse struct {
+	Readings []WeatherItem    `json:"readings"`
+	Periods  []weatherAverage `json:"periods"`
+}
+
+type WeatherReading struct {
+	WindSpeed     *float64 `json:"windSpeed"`
+	VaneDirection *float64 `json:"vaneDirection"`
+	Temperature   *float64 `json:"temperature"`
+	Pressure      *float64 `json:"pressure"`
+	Humidity      *float64 `json:"humidity"`
+	Gas           *float64 `json:"gas"`
+	Rainfall      *float64 `json:"rainfall"`
+}
+
+type WeatherPayload struct {
+	Source string `json:"source"`
+	WeatherReading
+}
+
+type WeatherItem struct {
+	Timestamp time.Time `json:"timestamp"`
+	WeatherPayload
 }
 
 func (w *WeatherStation) Name() string {
@@ -58,17 +76,26 @@ func (w *WeatherStation) Refresh(c context.Context) error {
 		return err
 	}
 
-	var info weatherStationResponseBody
+	var info weatherResponse
 	err = json.Unmarshal(body, &info)
 	if err != nil {
 		return err
 	}
 
-	if len(info.Items) == 0 {
+	if len(info.Readings) == 0 {
 		return nil
 	}
 
-	w.WeatherStatonResponse = &info.Items[len(info.Items)-1]
+	w.LastUpdated = &info.Readings[0].Timestamp
+
+	for _, p := range info.Periods {
+		if p.Period == "5m" {
+			a := p.Averages
+			w.WeatherStatonResponse = &a
+		} else if p.Period == "1hr" && w.WeatherStatonResponse != nil {
+			w.WeatherStatonResponse.Rainfall = &p.RainfallTotal
+		}
+	}
 
 	return nil
 }

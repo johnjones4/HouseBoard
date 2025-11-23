@@ -74,14 +74,14 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 
 	if c.services.WeatherStation != nil && c.services.WeatherStation.WeatherStatonResponse != nil {
 		resp.WeatherStation = &WeatherStation{
-			WindSpeed:     c.services.WeatherStation.WeatherStatonResponse.WindSpeed,
-			Gas:           c.services.WeatherStation.WeatherStatonResponse.Gas,
-			Pressure:      c.services.WeatherStation.WeatherStatonResponse.Pressure,
-			Humidity:      c.services.WeatherStation.WeatherStatonResponse.Humidity,
-			Temperature:   c.services.WeatherStation.WeatherStatonResponse.Temperature,
-			Timestamp:     c.services.WeatherStation.WeatherStatonResponse.Timestamp,
-			VaneDirection: c.services.WeatherStation.WeatherStatonResponse.VaneDirection,
-			Rainfall:      c.services.WeatherStation.WeatherStatonResponse.Rainfall,
+			WindSpeed:     *c.services.WeatherStation.WeatherStatonResponse.WindSpeed,
+			Gas:           *c.services.WeatherStation.WeatherStatonResponse.Gas,
+			Pressure:      *c.services.WeatherStation.WeatherStatonResponse.Pressure,
+			Humidity:      *c.services.WeatherStation.WeatherStatonResponse.Humidity,
+			Temperature:   *c.services.WeatherStation.WeatherStatonResponse.Temperature,
+			Timestamp:     *c.services.WeatherStation.LastUpdated,
+			VaneDirection: *c.services.WeatherStation.WeatherStatonResponse.VaneDirection,
+			Rainfall:      *c.services.WeatherStation.WeatherStatonResponse.Rainfall,
 		}
 	}
 
