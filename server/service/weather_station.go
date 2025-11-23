@@ -29,15 +29,14 @@ type WeatherStation struct {
 }
 
 type WeatherStatonResponse struct {
-	Timestamp        time.Time `json:"timestamp"`
-	AvgWindSpeed     float64   `json:"anemometerAverage"`
-	MinWindSpeed     float64   `json:"anemometerMin"`
-	MaxWindSpeed     float64   `json:"anemometerMax"`
-	Temperature      float64   `json:"temperature"`
-	Gas              float64   `json:"gas"`
-	RelativeHumidity float64   `json:"relativeHumidity"`
-	Pressure         float64   `json:"pressure"`
-	VaneDirection    float64   `json:"vaneDirection"`
+	Timestamp     time.Time `json:"timestamp"`
+	WindSpeed     float64   `json:"windSpeed"`
+	VaneDirection float64   `json:"vaneDirection"`
+	Temperature   float64   `json:"temperature"`
+	Pressure      float64   `json:"pressure"`
+	Humidity      float64   `json:"humidity"`
+	Gas           float64   `json:"gas"`
+	Rainfall      float64   `json:"rainfall"`
 }
 
 type weatherStationResponseBody struct {
@@ -94,9 +93,9 @@ func (w *WeatherStation) StateForPrompt() *string {
 - Relative Humidity: %0.2f%%
 - Atmospheric Pressure: %0.2f inHg`,
 		w.WeatherStatonResponse.Temperature,
-		w.WeatherStatonResponse.AvgWindSpeed,
+		w.WeatherStatonResponse.WindSpeed,
 		w.WeatherStatonResponse.VaneDirection,
-		w.WeatherStatonResponse.RelativeHumidity,
+		w.WeatherStatonResponse.Humidity,
 		w.WeatherStatonResponse.Pressure,
 	)
 	return &str

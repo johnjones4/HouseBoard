@@ -197,18 +197,10 @@ components:
           type: string
           format: date-time
           description: "The timestamp of the weather station data."
-        anemometerAverage:
+        windSpeed:
           type: number
           format: double
           description: "Average wind speed measured by the anemometer."
-        anemometerMin:
-          type: number
-          format: double
-          description: "Minimum wind speed measured by the anemometer."
-        anemometerMax:
-          type: number
-          format: double
-          description: "Maximum wind speed measured by the anemometer."
         temperature:
           type: number
           format: double
@@ -217,7 +209,7 @@ components:
           type: number
           format: double
           description: "Gas concentration level measured."
-        relativeHumidity:
+        humidity:
           type: number
           format: double
           description: "Relative humidity percentage."
@@ -229,16 +221,18 @@ components:
           type: number
           format: double
           description: "Wind direction in degrees from the vane."
+        rainfall:
+          type: number
+          format: double
       required:
         - timestamp
-        - anemometerAverage
-        - anemometerMin
-        - anemometerMax
+        - windSpeed
         - temperature
         - gas
-        - relativeHumidity
+        - humidity
         - pressure
         - vaneDirection
+        - rainfall
     SunriseSunset:
       properties:
         sunrise:

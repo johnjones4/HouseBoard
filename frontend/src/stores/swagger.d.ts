@@ -126,17 +126,7 @@ export interface components {
              * Format: double
              * @description Average wind speed measured by the anemometer.
              */
-            anemometerAverage: number;
-            /**
-             * Format: double
-             * @description Minimum wind speed measured by the anemometer.
-             */
-            anemometerMin: number;
-            /**
-             * Format: double
-             * @description Maximum wind speed measured by the anemometer.
-             */
-            anemometerMax: number;
+            windSpeed: number;
             /**
              * Format: double
              * @description Current temperature in degrees Celsius.
@@ -151,7 +141,7 @@ export interface components {
              * Format: double
              * @description Relative humidity percentage.
              */
-            relativeHumidity: number;
+            humidity: number;
             /**
              * Format: double
              * @description Atmospheric pressure in hPa.
@@ -162,6 +152,8 @@ export interface components {
              * @description Wind direction in degrees from the vane.
              */
             vaneDirection: number;
+            /** Format: double */
+            rainfall: number;
         };
         SunriseSunset: {
             /** Format: date-time */
