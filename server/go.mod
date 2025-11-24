@@ -5,12 +5,12 @@ go 1.23.4
 require (
 	github.com/arran4/golang-ical v0.3.1
 	github.com/mmcdole/gofeed v1.3.0
+	github.com/nathan-osman/go-sunrise v1.1.0
 )
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
-	github.com/nathan-osman/go-sunrise v1.1.0 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect

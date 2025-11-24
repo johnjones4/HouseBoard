@@ -30,6 +30,7 @@ func main() {
 	go services.Start(ctx, log)
 
 	r := api.New(log, services)
+	slog.Info("starting server", slog.String("host", os.Getenv("HTTP_HOST")))
 	err = http.ListenAndServe(os.Getenv("HTTP_HOST"), r)
 	if err != nil {
 		slog.Error("error listening", slog.Any("error", err))

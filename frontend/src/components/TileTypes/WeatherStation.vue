@@ -12,7 +12,7 @@
           </p>
           <p>
             <strong>Humidity:</strong>
-            {{ infoStore.info.weatherStation.relativeHumidity.toFixed(2) }}%
+            {{ infoStore.info.weatherStation.humidity.toFixed(2) }}%
           </p>
         </div>
       </div>
@@ -22,7 +22,7 @@
           transform: `rotate(${infoStore.info.weatherStation.vaneDirection}deg)`
         }"
       >
-        {{ infoStore.info.weatherStation.anemometerAverage.toFixed(1) }}mph
+        {{ infoStore.info.weatherStation.windSpeed.toFixed(1) }}mph
       </div>
     </div>
   </Tile>

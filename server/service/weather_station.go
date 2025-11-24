@@ -86,13 +86,20 @@ func (w *WeatherStation) Refresh(c context.Context) error {
 		return nil
 	}
 
-	w.LastUpdated = &info.Readings[0].Timestamp
+	w.LastUpdated = &info.Readings[len(info.Readings)-1].Timestamp
+
+	w.WeatherStatonResponse = &WeatherReading{}
 
 	for _, p := range info.Periods {
-		if p.Period == "5m" {
-			a := p.Averages
-			w.WeatherStatonResponse = &a
-		} else if p.Period == "1hr" && w.WeatherStatonResponse != nil {
+		if p.Period == "5min" {
+			w.WeatherStatonResponse.Gas = p.Averages.Gas
+			w.WeatherStatonResponse.Temperature = p.Averages.Temperature
+			w.WeatherStatonResponse.Humidity = p.Averages.Humidity
+			w.WeatherStatonResponse.WindSpeed = p.Averages.WindSpeed
+			w.WeatherStatonResponse.VaneDirection = p.Averages.VaneDirection
+			w.WeatherStatonResponse.Pressure = p.Averages.Pressure
+		}
+		if p.Period == "1hr" {
 			w.WeatherStatonResponse.Rainfall = &p.RainfallTotal
 		}
 	}
