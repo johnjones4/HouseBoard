@@ -53,6 +53,7 @@ export interface components {
             summary?: components["schemas"]["Summary"];
             sunriseSunset?: components["schemas"]["SunriseSunset"];
             trivia?: components["schemas"]["Trivia"];
+            homeAssistant?: components["schemas"]["HomeAssistant"];
         };
         Summary: {
             summary: string;
@@ -166,6 +167,13 @@ export interface components {
             choices: string[];
             previousQuestion: string;
             previousAnswer: string;
+        };
+        HomeAssistant: {
+            entities: components["schemas"]["HomeAssistantEntity"][];
+        };
+        HomeAssistantEntity: {
+            id: string;
+            value: string;
         };
     };
     responses: never;

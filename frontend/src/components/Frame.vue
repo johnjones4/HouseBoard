@@ -89,7 +89,7 @@ import { useInfoStore } from '../stores/info';
 import { computed, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faClock, faSun, faMoon } from '@fortawesome/free-regular-svg-icons'
-import { faTemperatureHalf } from '@fortawesome/free-solid-svg-icons'
+import { faCar, faHome, faTemperatureHalf } from '@fortawesome/free-solid-svg-icons'
 import { library, type IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import Trivia from './TileTypes/Trivia.vue';
 
@@ -107,20 +107,47 @@ interface FooterSummaryItem {
   value: string;
 }
 
+const haTemp = (id: string): string => {
+  const entity = infoStore?.info?.homeAssistant?.entities.find(e => e.id === id)
+  if (!entity || entity.value === '') {
+    return ''
+  }
+  return `${parseFloat(entity.value).toFixed(1)}°`;
+}
+
+const insideTemp = computed((): string => {
+  return haTemp('sensor.indoor_air_quality_aht20_temperature');
+});
+
+const garageTemp = computed((): string => {
+  return haTemp('sensor.garage_aht20_temperature');
+});
+
+
 const footers = computed((): FooterSummaryItem[] => {
   if (!infoStore.info) {
     return [];
   }
   return [
-    {
-      icon: faClock,
-      label: 'Date/Time',
-      value: new Date().toLocaleString(),
-    },
+    // {
+    //   icon: faClock,
+    //   label: 'Date/Time',
+    //   value: new Date().toLocaleString(),
+    // },
     {
       icon: faTemperatureHalf,
-      label: 'Temperature',
+      label: 'Outide',
       value: infoStore.info.weatherStation ? `${infoStore.info.weatherStation.temperature.toFixed(1)}°` : '',
+    },
+    {
+      icon: faHome,
+      label: 'Inside',
+      value: insideTemp.value,
+    },
+    {
+      icon: faCar,
+      label: 'Garage',
+      value: garageTemp.value,
     },
     {
       icon: faSun,
@@ -188,6 +215,7 @@ requestAnimationFrame(tick);
   flex-direction: row;
   padding: var(--thin-padding);
   font-size: 1.5;
+  justify-content: space-around;
 }
 
 .frame-footer-prop {

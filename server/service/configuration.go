@@ -10,6 +10,7 @@ type Configuration struct {
 	OpenWeatherMap OpenWeatherMap              `json:"openWeatherMap"`
 	SunriseSunset  SunriseSunsetConfiguration  `json:"sunriseSunset"`
 	Trivia         TriviaConfiguration         `json:"trivia"`
+	HomeAssistant  HomeAssistantConfiguration  `json:"homeAssistant"`
 }
 
 func (c Configuration) Services() *Services {
@@ -40,6 +41,9 @@ func (c Configuration) Services() *Services {
 	}
 	if !c.Trivia.Empty() {
 		svc.Trivia = c.Trivia.Service()
+	}
+	if !c.HomeAssistant.Empty() {
+		svc.HomeAssistant = c.HomeAssistant.Service()
 	}
 
 	return svc

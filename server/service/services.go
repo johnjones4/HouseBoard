@@ -31,6 +31,7 @@ type Services struct {
 	Lock           sync.RWMutex
 	SunriseSunset  *SunriseSunset
 	Trivia         *Trivia
+	HomeAssistant  *HomeAssistant
 
 	summary string
 }
@@ -46,6 +47,7 @@ func (s *Services) All() []core.Service {
 		s.WeatherStation,
 		s.SunriseSunset,
 		s.Trivia,
+		s.HomeAssistant,
 	}
 }
 

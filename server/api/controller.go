@@ -134,6 +134,18 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if c.services.HomeAssistant != nil && len(c.services.HomeAssistant.States) > 0 {
+		resp.HomeAssistant = &HomeAssistant{
+			Entities: make([]HomeAssistantEntity, 0, len(c.services.HomeAssistant.States)),
+		}
+		for id, state := range c.services.HomeAssistant.States {
+			resp.HomeAssistant.Entities = append(resp.HomeAssistant.Entities, HomeAssistantEntity{
+				Id:    id,
+				Value: state.State,
+			})
+		}
+	}
+
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		c.log.Error("error encoding response", slog.Any("error", err))

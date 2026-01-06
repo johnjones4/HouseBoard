@@ -54,11 +54,23 @@ type ForecastPeriod struct {
 	WindSpeed                  float64   `json:"windSpeed"`
 }
 
+// HomeAssistant defines model for HomeAssistant.
+type HomeAssistant struct {
+	Entities []HomeAssistantEntity `json:"entities"`
+}
+
+// HomeAssistantEntity defines model for HomeAssistantEntity.
+type HomeAssistantEntity struct {
+	Id    string `json:"id"`
+	Value string `json:"value"`
+}
+
 // Info defines model for Info.
 type Info struct {
 	Events         *Events         `json:"events,omitempty"`
 	Files          *Files          `json:"files,omitempty"`
 	Forecast       *Forecast       `json:"forecast,omitempty"`
+	HomeAssistant  *HomeAssistant  `json:"homeAssistant,omitempty"`
 	Summary        *Summary        `json:"summary,omitempty"`
 	SunriseSunset  *SunriseSunset  `json:"sunriseSunset,omitempty"`
 	Traffic        *Traffic        `json:"traffic,omitempty"`

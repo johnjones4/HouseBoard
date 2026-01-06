@@ -32,6 +32,8 @@ components:
           $ref: '#/components/schemas/SunriseSunset'
         trivia:
           $ref: '#/components/schemas/Trivia'
+        homeAssistant:
+          $ref: '#/components/schemas/HomeAssistant'
     Summary:
       required:
         - summary
@@ -259,3 +261,20 @@ components:
         - choices
         - previousQuestion
         - previousAnswer
+    HomeAssistant:
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeAssistantEntity'
+      required:
+      - entities
+    HomeAssistantEntity:
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+      required:
+      - id
+      - value

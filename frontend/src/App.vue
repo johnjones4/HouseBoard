@@ -42,20 +42,20 @@ const tileSets = [
       },
     ]
   },
-  {
-    title: 'Trivia',
-    tiles: [
-      {
-        tileType: TileType.trivia,
-        position: {
-          row: 1,
-          col: 1,
-          width: 12,
-          height: 6,
-        },
-      },
-    ],
-  },
+  // {
+  //   title: 'Trivia',
+  //   tiles: [
+  //     {
+  //       tileType: TileType.trivia,
+  //       position: {
+  //         row: 1,
+  //         col: 1,
+  //         width: 12,
+  //         height: 6,
+  //       },
+  //     },
+  //   ],
+  // },
   {
     title: 'Current Conditions',
     tiles: [
