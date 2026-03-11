@@ -54,6 +54,15 @@ export interface components {
             sunriseSunset?: components["schemas"]["SunriseSunset"];
             trivia?: components["schemas"]["Trivia"];
             homeAssistant?: components["schemas"]["HomeAssistant"];
+            flights?: components["schemas"]["Flights"];
+        };
+        Flights: {
+            flights: components["schemas"]["FlightInfo"][];
+        };
+        FlightInfo: {
+            callsign?: string;
+            /** Format: double */
+            altitude?: number;
         };
         Summary: {
             summary: string;

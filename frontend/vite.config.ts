@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
-      '/info': 'http://192.168.1.148:8080'
+      '/info': 'http://localhost:8080'
     }
   }
 })

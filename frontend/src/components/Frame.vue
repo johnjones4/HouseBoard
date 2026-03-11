@@ -68,6 +68,12 @@
         </div>
       </div>
     </div>
+    <div v-if="alerts.length > 0" class="alerts">
+      <div v-for="alert in alerts" :key="alert.text" class="alert">
+        <FontAwesomeIcon :icon="alert.icon" size="1x" />
+        {{ alert.text }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -89,9 +95,12 @@ import { useInfoStore } from '../stores/info';
 import { computed, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faClock, faSun, faMoon } from '@fortawesome/free-regular-svg-icons'
-import { faCar, faHome, faTemperatureHalf } from '@fortawesome/free-solid-svg-icons'
-import { library, type IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import { faCar, faHome, faPlane, faTemperatureHalf, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { library, text, type IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import Trivia from './TileTypes/Trivia.vue';
+import type { components } from '../stores/swagger';
+
+type FlightInfo = components['schemas']['FlightInfo'];
 
 library.add(faClock, faTemperatureHalf, faSun, faMoon);
 
@@ -105,6 +114,11 @@ interface FooterSummaryItem {
   icon: IconDefinition;
   label: string;
   value: string;
+}
+
+interface Alert {
+  icon: IconDefinition;
+  text: string;
 }
 
 const haTemp = (id: string): string => {
@@ -123,6 +137,32 @@ const garageTemp = computed((): string => {
   return haTemp('sensor.garage_aht20_temperature');
 });
 
+function metersToFeet(meters: number): number {
+  return meters * 3.28084;
+}
+
+const alerts = computed((): Alert[] => {
+  if (!infoStore.info) {
+    return [];
+  }
+  return (infoStore.info.flights ? infoStore.info.flights.flights.map(flight => makeFlightAlert(flight)) : []).concat(
+    infoStore.info.forecast ? infoStore.info.forecast.alerts.map(makeWeatherAlert) : []
+  )
+});
+
+const makeFlightAlert = (flight: FlightInfo): Alert => {
+  return {
+    icon: faPlane,
+    text: `Aircraft with ${flight.callsign ? 'callsign ' + flight.callsign : 'no callsign'} passing over${flight.altitude ? ' at ' + metersToFeet(flight.altitude).toFixed(0) + ' feet' : ''}.`
+  }
+}
+
+const makeWeatherAlert = (text: string): Alert => {
+  return {
+    icon: faWarning,
+    text,
+  }
+}
 
 const footers = computed((): FooterSummaryItem[] => {
   if (!infoStore.info) {
@@ -246,6 +286,13 @@ requestAnimationFrame(tick);
 
 .frame-footer-prop-label {
   font-weight: 400;
+}
+
+.alert {
+  background-color: var(--color-red);
+  color: white;
+  padding: 0.5em;
+  margin-top: 0.25em;
 }
 
 </style>
