@@ -11,6 +11,7 @@ type Configuration struct {
 	SunriseSunset  SunriseSunsetConfiguration  `json:"sunriseSunset"`
 	Trivia         TriviaConfiguration         `json:"trivia"`
 	HomeAssistant  HomeAssistantConfiguration  `json:"homeAssistant"`
+	Flights        flightsConfiguration        `json:"flights"`
 }
 
 func (c Configuration) Services() *Services {
@@ -45,6 +46,8 @@ func (c Configuration) Services() *Services {
 	if !c.HomeAssistant.Empty() {
 		svc.HomeAssistant = c.HomeAssistant.Service()
 	}
-
+	if !c.Flights.Empty() {
+		svc.Flights = c.Flights.Service()
+	}
 	return svc
 }

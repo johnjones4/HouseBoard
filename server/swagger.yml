@@ -34,6 +34,23 @@ components:
           $ref: '#/components/schemas/Trivia'
         homeAssistant:
           $ref: '#/components/schemas/HomeAssistant'
+        flights:
+          $ref: '#/components/schemas/Flights'
+    Flights:
+      properties:
+        flights:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightInfo'
+      required:
+      - flights
+    FlightInfo:
+      properties:
+        callsign:
+          type: string
+        altitude:
+          type: number
+          format: double
     Summary:
       required:
         - summary

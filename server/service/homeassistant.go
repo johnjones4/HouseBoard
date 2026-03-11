@@ -41,6 +41,9 @@ func (f *HomeAssistant) Name() string {
 }
 
 func (f *HomeAssistant) Refresh(c context.Context) error {
+	if f == nil {
+		return nil
+	}
 	req, err := http.NewRequest("GET", f.Url+"/api/states", nil)
 	if err != nil {
 		return err

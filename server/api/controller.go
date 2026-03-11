@@ -146,6 +146,22 @@ func (c *controller) GetInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if c.services.Flights != nil && len(c.services.Flights.FlightsResponse) > 0 {
+		resp.Flights = &Flights{
+			Flights: make([]FlightInfo, 0, len(c.services.Flights.FlightsResponse)),
+		}
+		for _, flight := range c.services.Flights.FlightsResponse {
+			callsign := flight.GetCallsign()
+			alt := flight.GetAlitude()
+			if callsign != nil || alt != nil {
+				resp.Flights.Flights = append(resp.Flights.Flights, FlightInfo{
+					Altitude: alt,
+					Callsign: callsign,
+				})
+			}
+		}
+	}
+
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		c.log.Error("error encoding response", slog.Any("error", err))

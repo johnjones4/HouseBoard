@@ -35,6 +35,17 @@ type Files struct {
 	Files []string `json:"files"`
 }
 
+// FlightInfo defines model for FlightInfo.
+type FlightInfo struct {
+	Altitude *float64 `json:"altitude,omitempty"`
+	Callsign *string  `json:"callsign,omitempty"`
+}
+
+// Flights defines model for Flights.
+type Flights struct {
+	Flights []FlightInfo `json:"flights"`
+}
+
 // Forecast defines model for Forecast.
 type Forecast struct {
 	Alerts           []string         `json:"alerts"`
@@ -69,6 +80,7 @@ type HomeAssistantEntity struct {
 type Info struct {
 	Events         *Events         `json:"events,omitempty"`
 	Files          *Files          `json:"files,omitempty"`
+	Flights        *Flights        `json:"flights,omitempty"`
 	Forecast       *Forecast       `json:"forecast,omitempty"`
 	HomeAssistant  *HomeAssistant  `json:"homeAssistant,omitempty"`
 	Summary        *Summary        `json:"summary,omitempty"`

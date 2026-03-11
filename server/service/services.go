@@ -32,6 +32,7 @@ type Services struct {
 	SunriseSunset  *SunriseSunset
 	Trivia         *Trivia
 	HomeAssistant  *HomeAssistant
+	Flights        *Flights
 
 	summary string
 }
@@ -48,6 +49,7 @@ func (s *Services) All() []core.Service {
 		s.SunriseSunset,
 		s.Trivia,
 		s.HomeAssistant,
+		s.Flights,
 	}
 }
 
